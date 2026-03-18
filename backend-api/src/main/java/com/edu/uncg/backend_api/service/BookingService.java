@@ -2,10 +2,10 @@ package com.edu.uncg.backend_api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import com.edu.uncg.backend_api.entity.Booking;
 import com.edu.uncg.backend_api.repository.BookingRepository;
-import com.edu.uncg.backend_api.repository.ParentRepository;
 
 @Service
 public class BookingService {
