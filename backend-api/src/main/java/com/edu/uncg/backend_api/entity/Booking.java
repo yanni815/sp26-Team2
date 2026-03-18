@@ -1,7 +1,5 @@
 package com.edu.uncg.backend_api.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -56,6 +54,14 @@ public class Booking {
 
     public void setEndTime(String endTime){
         this.endTime = endTime;
+    }
+
+    public double gettotalCost(){
+        return totalCost;
+    }
+
+    public void settotalCost(double totalCost){
+        this.totalCost = totalCost;
     }
 }
 

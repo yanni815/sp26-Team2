@@ -4,7 +4,7 @@ package com.edu.uncg.backend_api.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
-import java.util.List;
+
 
 @Entity
 @Table(name = "parents")
