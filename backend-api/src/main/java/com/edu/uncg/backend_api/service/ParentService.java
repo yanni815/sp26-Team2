@@ -9,22 +9,23 @@ import java.util.List;
 @Service
 public class ParentService {
     @Autowired
-    private ParentRepository repo;
+    private ParentRepository parentRepository;
 
     public Parent createParent(Parent parent){
-        return repo.save(parent);
+        return parentRepository.save(parent);
     }
 
     public List<Parent> getallParents(){
-        return repo.findAll();
+        return parentRepository.findAll();
     }
 
-    public Parent updateParent(Long id, Parent updatedParent) {
-        Parent p = repo.findById(id).orElseThrow();
-        p.setName(updatedParent.getName());
-        p.setName(updatedParent.getEmail());
-        p.setName(updatedParent.getPhone());
-        return repo.save(p);
+    public Parent updateParent(Long id, Parent updated) {
+        Parent p = parentRepository.findById(id).orElseThrow();
+        p.setAddress(updated.getAddress());
+        p.setNumberOfChildren(updated.getNumberOfChildren());
+        return parentRepository.save(p);
     }
+
+   
 
 }
