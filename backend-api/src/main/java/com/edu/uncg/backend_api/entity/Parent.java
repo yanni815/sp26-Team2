@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 @Table(name = "parents")
 public class Parent extends User{
    private String address;
+   private String name;
    private int numberOfChildren;
 
    public String getAddress(){
@@ -26,5 +27,13 @@ public class Parent extends User{
 
    public void setNumberOfChildren(int numberOfChildren){
     this.numberOfChildren = numberOfChildren;
+   }
+
+   public String getName(){
+      return name;
+   }
+
+   public void setName(String name){
+      this.name = name;
    }
 }
