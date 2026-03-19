@@ -22,7 +22,7 @@ public class User {
     private String password;
     private String phoneNumber;
 
-    public String getname(){
+    public String getName(){
         return name;
     }
 
@@ -30,7 +30,7 @@ public class User {
         this.name = name;
     }
 
-    public String getemail(){
+    public String getEmail(){
         return email;
     }
 
@@ -38,19 +38,19 @@ public class User {
         this.email = email;
     }
 
-    public String getepassword(){
+    public String getPassword(){
         return password;
     }
 
-    public void Password(String password){
+    public void setPassword(String password){
         this.password = password;
     }
 
-    public String getphoneNumber(){
+    public String getPhoneNumber(){
         return phoneNumber;
     }
 
-    public void PhoneNumber(String phoneNumber){
+    public void setPhoneNumber(String phoneNumber){
         this.phoneNumber = phoneNumber;
     }
 }
