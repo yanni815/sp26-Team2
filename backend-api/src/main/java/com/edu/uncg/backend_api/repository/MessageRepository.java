@@ -1,5 +1,11 @@
 package com.edu.uncg.backend_api.repository;
 
-public class MessageRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.edu.uncg.backend_api.entity.Message;
+
+public interface MessageRepository extends JpaRepository<Message, Long> {
+
+    
+
     
 }
