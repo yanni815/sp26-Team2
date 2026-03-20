@@ -19,4 +19,9 @@ public class ReviewSerivce {
         return reviewRepository.findAll();
 
     }
+
+    public Review deleteReview(Long id){
+    Review review = reviewRepository.findById(id).orElseThrow();
+    return reviewRepository.save(review);
+}
 }
