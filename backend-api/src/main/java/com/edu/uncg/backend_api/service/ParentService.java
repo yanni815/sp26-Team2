@@ -20,10 +20,16 @@ public class ParentService {
     }
 
     public Parent updateParent(Long id, Parent updated) {
-        Parent p = parentRepository.findById(id).orElseThrow();
-        p.setAddress(updated.getAddress());
-        p.setNumberOfChildren(updated.getNumberOfChildren());
-        return parentRepository.save(p);
+        Parent parent = parentRepository.findById(id).orElseThrow();
+        parent.setAddress(updated.getAddress());
+        parent.setNumberOfChildren(updated.getNumberOfChildren());
+
+        parent.setName(updated.getName());
+        parent.setEmail(updated.getEmail());
+        parent.setPassword(updated.getPassword());
+        parent.setPhoneNumber(updated.getPhoneNumber());
+
+        return parentRepository.save(parent);
     }
 
    
