@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bookingid;
+    private Long bookingID;
     private String startTime;
     private String endTime;
     private String date;
@@ -78,7 +78,7 @@ public class Booking {
         return babysitter;
     }
 
-    public void setBabaysitter(Babysitter babysitter){
+    public void setBabysitter(Babysitter babysitter){
         this.babysitter = babysitter;
     }
 }

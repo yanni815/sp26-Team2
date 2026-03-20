@@ -38,7 +38,7 @@ public class BookingService {
         booking.setStatus(updatedBooking.getStatus());
         booking.setTotalCost(updatedBooking.getTotalCost());
         booking.setParent(updatedBooking.getParent());
-        booking.setBabaysitter(updatedBooking.getBabysitter());
+        booking.setBabysitter(updatedBooking.getBabysitter());
 
         return bookingRepository.save(booking);
     }
