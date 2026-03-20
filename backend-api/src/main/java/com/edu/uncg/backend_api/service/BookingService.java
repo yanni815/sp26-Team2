@@ -32,9 +32,9 @@ public class BookingService {
     public Booking updateBooking(Long id, Booking updatedBooking) {
         Booking booking = bookingRepository.findById(id).orElseThrow();
 
-        booking.setDate(updatedBooking.getdate());
-        booking.setStartTime(updatedBooking.getstartTime());
-        booking.setEndTime(updatedBooking.getendTime());
+        booking.setDate(updatedBooking.getDate());
+        booking.setStartTime(updatedBooking.getStartTime());
+        booking.setEndTime(updatedBooking.getEndTime());
         booking.setStatus(updatedBooking.getStatus());
         booking.setTotalCost(updatedBooking.getTotalCost());
         booking.setParent(updatedBooking.getParent());
@@ -45,7 +45,7 @@ public class BookingService {
 
     public Booking deleteBooking(Long Id){
         Booking b = bookingRepository.findById(Id).orElseThrow();
-        b.setStatus("CANCLED");
+        b.setStatus("CANCLLED");
         return bookingRepository.save(b);
     }
 

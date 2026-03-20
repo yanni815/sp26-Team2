@@ -34,7 +34,7 @@ public class Booking {
         this.status = status;
     }
 
-    public String getstartTime(){
+    public String getStartTime(){
         return startTime;
     }
 
@@ -42,7 +42,7 @@ public class Booking {
         this.startTime = startTime;
     }
 
-    public String getdate(){
+    public String getDate(){
         return date;
     }
 
@@ -50,7 +50,7 @@ public class Booking {
         this.date = date;
     }
 
-    public String getendTime(){
+    public String getEndTime(){
         return endTime;
     }
 
