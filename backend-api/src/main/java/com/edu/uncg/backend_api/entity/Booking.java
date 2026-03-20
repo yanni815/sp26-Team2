@@ -58,11 +58,11 @@ public class Booking {
         this.endTime = endTime;
     }
 
-    public double gettotalCost(){
+    public double getTotalCost(){
         return totalCost;
     }
 
-    public void settotalCost(double totalCost){
+    public void setTotalCost(double totalCost){
         this.totalCost = totalCost;
     }
 }
