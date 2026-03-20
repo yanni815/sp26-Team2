@@ -43,7 +43,7 @@ public class Booking {
     }
 
     public String getdate(){
-        return status;
+        return date;
     }
 
     public void setDate(String date){
