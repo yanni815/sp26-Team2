@@ -39,14 +39,14 @@ public class BookingController {
     }
 
 
-    @PutMapping("/{bookingId}")
-    public Booking updateBooking(@PathVariable Long bookingId, @RequestBody Booking booking){
-        return bookingService.updateBooking(bookingId, booking);
+    @PutMapping("/{id}")
+    public Booking updateBooking(@PathVariable Long id, @RequestBody Booking booking){
+        return bookingService.updateBooking(id, booking);
     }
 
-    @DeleteMapping("/{bookingId}")
-    public void deleteBooking(@PathVariable Long bookingId){
-        bookingService.deleteBooking(bookingId);
+    @DeleteMapping("/{id}")
+    public void deleteBooking(@PathVariable Long id){
+        bookingService.deleteBooking(id);
     }
 
 

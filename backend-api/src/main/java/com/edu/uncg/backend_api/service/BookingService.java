@@ -36,6 +36,9 @@ public class BookingService {
         booking.setStartTime(updatedBooking.getstartTime());
         booking.setEndTime(updatedBooking.getendTime());
         booking.setStatus(updatedBooking.getStatus());
+        booking.setTotalCost(updatedBooking.getTotalCost());
+        booking.setParent(updatedBooking.getParent());
+        booking.setBabaysitter(updatedBooking.getBabysitter());
 
         return bookingRepository.save(booking);
     }

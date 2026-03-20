@@ -65,6 +65,22 @@ public class Booking {
     public void setTotalCost(double totalCost){
         this.totalCost = totalCost;
     }
+
+     public Parent getParent(){
+        return parent;
+    }
+
+    public void setParent(Parent parent){
+        this.parent = parent;
+    }
+
+     public Babysitter getBabysitter(){
+        return babysitter;
+    }
+
+    public void setBabaysitter(Babysitter babysitter){
+        this.babysitter = babysitter;
+    }
 }
 
 
