@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/parents/{parentId}/bookings")
+@RequestMapping("/bookings")
 public class BookingController {
      @Autowired
     private BookingService bookingService;
