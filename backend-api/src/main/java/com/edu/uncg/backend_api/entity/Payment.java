@@ -47,8 +47,8 @@ public class Payment {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String payemntStatus){
-        this.paymentStatus = payemntStatus;
+    public void setPaymentStatus(String paymentStatus){
+        this.paymentStatus = paymentStatus;
     }
 
      public String getPaymentDate(){

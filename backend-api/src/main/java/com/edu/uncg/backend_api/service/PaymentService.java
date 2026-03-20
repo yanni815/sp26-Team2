@@ -20,4 +20,16 @@ public class PaymentService {
     public List<Payment> getAll(){
         return paymentRepository.findAll();
     }
+
+    public Payment updatePayment(Long id, Payment updatedPayment) {
+    Payment payment = paymentRepository.findById(id).orElseThrow();
+
+    payment.setAmount(updatedPayment.getAmount());
+    payment.setPaymentDate(updatedPayment.getPaymentDate());
+    payment.setPaymentStatus(updatedPayment.getPaymentStatus());
+
+    payment.setBooking(updatedPayment.getBooking());
+
+    return paymentRepository.save(payment);
+}
 }
