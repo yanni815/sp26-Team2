@@ -15,4 +15,8 @@ public class BabysitterService {
     public List<Babysitter> getAll(){
         return babysitterRepository.findAll();
     }
+
+    public Babysitter save(Babysitter babysitter){
+        return babysitterRepository.save(babysitter);
+    }
 }
