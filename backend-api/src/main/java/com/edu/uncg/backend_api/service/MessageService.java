@@ -18,10 +18,7 @@ public class MessageService {
     @Autowired
     private UserRepository userRepository;
 
-    public Message send(Message message){
-        Long senderId = message.getSender().getId();
-        Long receiverId = message.getReceiver().getId();
-
+    public Message send(Long senderId, Long receiverId, Message message){
         User sender = userRepository.findById(senderId).orElseThrow();
         User receiever = userRepository.findById(receiverId).orElseThrow();
 

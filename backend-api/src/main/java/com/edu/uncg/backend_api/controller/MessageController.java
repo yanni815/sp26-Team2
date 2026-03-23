@@ -23,9 +23,9 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-   @PostMapping("/send")
-   public Message sendMessage(@RequestBody Message message){
-    return messageService.send(message);
+   @PostMapping("/send/{senderId}/{receiverId}")
+   public Message sendMessage( @PathVariable Long senderId, @PathVariable Long receiverId,@RequestBody Message message){
+    return messageService.send(senderId, receiverId, message);
    }
 
    @GetMapping

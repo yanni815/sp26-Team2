@@ -11,9 +11,6 @@ public class Message{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long messageId;
-
-    private Long senderID;
-    private Long receiverID;
     private String content;
     private String timestamp;
 
@@ -48,22 +45,6 @@ public class Message{
 
     public void setMessageID(Long messageID) {
         this.messageId = messageID;
-    }
-
-    public Long getSenderID() {
-        return senderID;
-    }
-
-    public void setSenderID(Long senderID) {
-        this.senderID = senderID;
-    }
-
-    public Long getReceiverID() {
-        return receiverID;
-    }
-
-    public void setReceiverID(Long receiverID) {
-        this.receiverID = receiverID;
     }
 
     public String getContent() {
