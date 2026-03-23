@@ -22,7 +22,7 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-   @PostMapping
+   @PostMapping("/send")
    public Message sendMessage(@RequestBody Message message){
     return messageService.send(message);
    }
