@@ -2,7 +2,8 @@
 
 ## 1. UML Class Diagram
 
-![UML Diagram](docs/UML Diagram.drawio.png)
+![UML Diagram](./<img width="712" height="1102" alt="UML Diagram drawio" src="https://github.com/user-attachments/assets/41ec8068-2670-4838-9493-b742f5cdd63b" />
+)
 
 **Classes to include (example):**
 - User / Babysitter (inheritance if applicable)
