@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 public class Message{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long messageID;
+    private Long messageId;
 
     private Long senderID;
     private Long receiverID;
@@ -16,11 +16,11 @@ public class Message{
     private String timestamp;
 
      public Long getMessageID() {
-        return messageID;
+        return messageId;
     }
 
     public void setMessageID(Long messageID) {
-        this.messageID = messageID;
+        this.messageId = messageID;
     }
 
     public Long getSenderID() {
