@@ -32,4 +32,11 @@ public class PaymentService {
 
     return paymentRepository.save(payment);
 }
+
+    public Payment deletePayment(Long id){
+    Payment payment = paymentRepository.findById(id).orElseThrow();
+    payment.setPaymentStatus("DELETED");
+    return paymentRepository.save(payment);
+}
+
 }

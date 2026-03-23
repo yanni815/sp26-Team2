@@ -1,6 +1,7 @@
 package com.edu.uncg.backend_api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,4 +34,10 @@ public class PaymentController {
     public Payment updatePayment(@PathVariable Long id, @RequestBody Payment payment){
         return paymentService.updatePayment(id, payment);
     }
+
+    @DeleteMapping("/{id}")
+    public Payment deletePayment(@PathVariable Long id){
+        return paymentService.deletePayment(id);
+    }
+
 }
