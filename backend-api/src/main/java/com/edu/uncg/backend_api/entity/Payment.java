@@ -11,7 +11,7 @@ import jakarta.persistence.ManyToOne;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long paymentID;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "booking_id")
@@ -21,13 +21,16 @@ public class Payment {
     private String paymentStatus;
     private String paymentDate;
 
-    public Long getPaymentId(){
-        return paymentID;
+    public Payment(){}
+
+    public Long getId(){
+        return id;
     }
 
-    public void setPaymentID(Long paymentID){
-        this.paymentID = paymentID;
+    public void setId(Long id){
+        this.id = id;
     }
+
 
     public Booking getBooking(){
         return booking;
