@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -13,13 +14,14 @@ public class Payment {
     private Long paymentID;
 
     @OneToOne
+    @JoinColumn(name = "booking_id")
     private Booking booking;
 
     private double amount;
     private String paymentStatus;
     private String paymentDate;
 
-    public Long getPaymentID(){
+    public Long getPaymentId(){
         return paymentID;
     }
 
