@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="UML Diagram" id="uml123">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- User -->
+        <mxCell id="user" value="User&#10;- userId: Long&#10;- name: String&#10;- email: String" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Parent -->
+        <mxCell id="parent" value="Parent&#10;- phone: String" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="140" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Babysitter -->
+        <mxCell id="babysitter" value="Babysitter&#10;- rating: int&#10;- bio: String" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="140" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Availability -->
+        <mxCell id="availability" value="Availability&#10;- availabilityId: Long&#10;- day: String&#10;- startTime: String&#10;- endTime: String&#10;- babysitter: Babysitter" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="260" width="180" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Booking -->
+        <mxCell id="booking" value="Booking&#10;- bookingId: Long&#10;- startTime: String&#10;- endTime: String&#10;- date: String&#10;- parent: Parent&#10;- babysitter: Babysitter" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="300" width="180" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Payment -->
+        <mxCell id="payment" value="Payment&#10;- paymentId: Long&#10;- amount: Double&#10;- date: String&#10;- booking: Booking" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="440" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Message -->
+        <mxCell id="message" value="Message&#10;- messageId: Long&#10;- content: String&#10;- date: String&#10;- booking: Booking" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="440" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Review -->
+        <mxCell id="review" value="Review&#10;- reviewId: Long&#10;- rating: int&#10;- comment: String&#10;- booking: Booking" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="440" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Inheritance lines -->
+        <mxCell id="inherit1" style="edgeStyle=orthogonalEdgeStyle;endArrow=blockThin;html=1;" edge="1" parent="1" source="parent" target="user">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="inherit2" style="edgeStyle=orthogonalEdgeStyle;endArrow=blockThin;html=1;" edge="1" parent="1" source="babysitter" target="user">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Associations -->
+        <mxCell id="assoc1" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamond;html=1;" edge="1" parent="1" source="babysitter" target="availability">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="assoc2" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamond;html=1;" edge="1" parent="1" source="parent" target="booking">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="assoc3" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamond;html=1;" edge="1" parent="1" source="babysitter" target="booking">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="assoc4" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamond;html=1;" edge="1" parent="1" source="booking" target="payment">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="assoc5" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamond;html=1;" edge="1" parent="1" source="booking" target="message">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="assoc6" style="edgeStyle=orthogonalEdgeStyle;endArrow=diamond;html=1;" edge="1" parent="1" source="booking" target="review">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
