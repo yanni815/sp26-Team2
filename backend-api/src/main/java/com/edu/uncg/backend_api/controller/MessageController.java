@@ -33,7 +33,7 @@ public class MessageController {
     return messageService.getAll();
    }
 
-    @PutMapping
+    @PutMapping("/{id}")
      public Message updateMessage(@PathVariable Long id, @RequestBody Message message){
         return messageService.save(message);
 
