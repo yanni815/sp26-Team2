@@ -30,7 +30,7 @@ public class PaymentController {
 
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public Payment updatePayment(@PathVariable Long id, @RequestBody Payment payment){
         return paymentService.updatePayment(id, payment);
     }
