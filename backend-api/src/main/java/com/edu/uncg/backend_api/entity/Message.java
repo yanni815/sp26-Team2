@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 @Entity
 public class Message{
     @Id
@@ -14,6 +16,31 @@ public class Message{
     private Long receiverID;
     private String content;
     private String timestamp;
+
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiever;
+
+    public User getSender(){
+        return sender;
+    }
+
+    public void setSender(User sender){
+        this.sender = sender;
+    }
+
+
+      public User getReceiver(){
+        return receiever;
+    }
+
+    public void setReceiver(User receiver){
+        this.receiever = receiver;
+    }
 
      public Long getMessageID() {
         return messageId;
