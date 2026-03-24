@@ -49,5 +49,18 @@ public class BookingService {
         return bookingRepository.save(b);
     }
 
+    public Booking acceptBooking(Long id){
+        Booking booking = bookingRepository.findById(id).orElseThrow();
+        booking.setStatus("ACCEPTED");
+
+    return bookingRepository.save(booking);
+    }
+
+    public Booking declineBooking(Long id){
+        Booking booking = bookingRepository.findById(id).orElseThrow();
+        booking.setStatus("DECLINED");
+
+    return bookingRepository.save(booking);
+}
 
 }

@@ -49,5 +49,14 @@ public class BookingController {
         bookingService.deleteBooking(id);
     }
 
+    @PutMapping("/{id}/accept")
+    public Booking acceptBooking(@PathVariable Long id){
+        return bookingService.acceptBooking(id);
+    }
+
+    @PutMapping("/{id}/decline")
+    public Booking declineBooking(@PathVariable Long id){
+        return bookingService.declineBooking(id);
+    }
 
 }
