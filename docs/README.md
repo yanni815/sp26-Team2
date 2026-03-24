@@ -42,9 +42,9 @@ Response
 
 ```
 Get parent by ID
-Endpoint: GET /customers/{id} Use Case: Customer profile view Description: Retrieve specific customer by ID.
+Endpoint: GET /parents/{id} Use Case: Customer profile view Description: Retrieve specific customer by ID.
 ```
-GET /customers/1
+GET /parents/1
 
 ```
 Babysitter Management
