@@ -196,6 +196,101 @@ Response:
 | Leave review| POST /review | parents can leave reviews for sitters 
 
 
+Babysitter Operations
+Create Availability
+Endpoint: POST /availability
+Use Case: US-BABY-002 (Set Availability)
+Description: Babysitter creates and updates their available working schedule.
+POST /availability
+Content-Type: application/json
+
+{
+ "day": "Monday",
+ "startTime": "16:00",
+ "endTime": "22:00",
+ "babysitter": {
+   "id": 1
+ }
+}
+Response
+{
+ "id": 1,
+ "day": "Monday",
+ "startTime": "16:00",
+ "endTime": "22:00",
+ "babysitter": {
+   "id": 1
+ }
+}
+
+View Availability
+Endpoint: GET /availability/babysitter/{id}
+Use Case: US-BABY-003 (View Availability)
+Description: Retrieve all availability entries for a specific babysitter.
+GET /availability/babysitter/1
+
+Booking Management 
+Accept Booking
+Endpoint: PUT /bookings/{id}
+Use Case: US-BABY-004 (Accept Booking)
+Description: Babysitter updates booking status to ACCEPTED.
+PUT /bookings/1
+Content-Type: application/json
+
+{
+ "parent": { "id": 1 },
+ "babysitter": { "id": 1 },
+ "date": "2026-03-25",
+ "startTime": "18:00",
+ "endTime": "22:00",
+ "totalCost": 72.0,
+ "status": "ACCEPTED"
+}
+Response
+{
+ "id": 1,
+ "status": "ACCEPTED"
+}
+
+Decline Booking
+Endpoint: PUT /bookings/{id}
+Use Case: US-BABY-005 (Decline Booking)
+Description: Babysitter updates booking status to DECLINED.
+PUT /bookings/1
+Content-Type: application/json
+
+{
+ "parent": { "id": 1 },
+ "babysitter": { "id": 1 },
+ "date": "2026-03-25",
+ "startTime": "18:00",
+ "endTime": "22:00",
+ "totalCost": 72.0,
+ "status": "DECLINED"
+}
+
+View Bookings
+Endpoint: GET /bookings
+Use Case: US-BABY-006 (View Bookings)
+Description: Retrieve all bookings and their current status.
+GET /bookings
+
+Payment Management (Babysitter)
+View Payments
+Endpoint: GET /payments
+ Use Case: US-BABY-007 (View Payments)
+ Description: Babysitter views payment records associated with bookings.
+GET /payments
+
+Review Management (Babysitter)
+View Reviews
+Endpoint: GET /reviews
+ Use Case: US-BABY-008 (View Reviews)
+ Description: Babysitter views ratings and feedback left by parents.
+GET /reviews
+
+
+
 
 
 
