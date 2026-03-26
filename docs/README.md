@@ -316,4 +316,15 @@ Use Case: US-BABY-008 (View Reviews)
 Description: Babysitter views ratings and feedback left by parents.
 ```
 GET /reviews
+```
+## 3. Use Case Mapping (Babysitter)
 
+| Use Case | API Endpoint | Description |
+|----------|-------------|-------------|
+| Set availability | POST /availability | Babysitter sets working schedule |
+| View availability | GET /availability/babysitter/{id} | View babysitter availability |
+| Accept booking | PUT /bookings/{id} | Babysitter accepts booking request |
+| Decline booking | PUT /bookings/{id} | Babysitter declines booking request |
+| View bookings | GET /bookings | Babysitter views all bookings |
+| View payments | GET /payments | Babysitter views payment records |
+| View reviews | GET /reviews | Babysitter views feedback from parents |
