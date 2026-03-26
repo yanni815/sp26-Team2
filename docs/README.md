@@ -196,13 +196,14 @@ Response:
 | Leave review| POST /review | parents can leave reviews for sitters 
 
 
-Babysitter Operations
-Create Availability
+### Babysitter Operations
 
-Endpoint: POST /availability
-Use Case: US-BABY-002 (Set Availability)
-Description: Babysitter creates and updates their available working schedule.
+#### Create Availability
 
+**Endpoint:** POST /availability  
+**Use Case:** US-BABY-002 (Set Availability)  
+**Description:** Babysitter creates and updates their available working schedule.
+```json
 POST /availability
 Content-Type: application/json
 
@@ -214,8 +215,9 @@ Content-Type: application/json
     "id": 1
   }
 }
-
-Response
+```
+Response:
+```
 
 {
   "id": 1,
@@ -226,19 +228,22 @@ Response
     "id": 1
   }
 }
+```
 View Availability
 
 Endpoint: GET /availability/babysitter/{id}
 Use Case: US-BABY-003 (View Availability)
 Description: Retrieve all availability entries for a specific babysitter.
-
+```
 GET /availability/babysitter/1
-Booking Management (Babysitter Actions)
+```
+Booking Management 
 Accept Booking
 
 Endpoint: PUT /bookings/{id}
 Use Case: US-BABY-004 (Accept Booking)
 Description: Babysitter updates booking status to ACCEPTED.
+```
 
 PUT /bookings/1
 Content-Type: application/json
@@ -253,17 +258,20 @@ Content-Type: application/json
   "status": "ACCEPTED"
 }
 
-Response
-
+```
+Response:
+```
 {
   "id": 1,
   "status": "ACCEPTED"
 }
+```
 Decline Booking
 
 Endpoint: PUT /bookings/{id}
 Use Case: US-BABY-005 (Decline Booking)
 Description: Babysitter updates booking status to DECLINED.
+```
 
 PUT /bookings/1
 Content-Type: application/json
@@ -277,29 +285,35 @@ Content-Type: application/json
   "totalCost": 72.0,
   "status": "DECLINED"
 }
+
+```
 View Bookings
 
 Endpoint: GET /bookings
 Use Case: US-BABY-006 (View Bookings)
 Description: Retrieve all bookings and their current status.
+```
 
 GET /bookings
-Payment Management (Babysitter Perspective)
+
+```
+
+Payment Management 
 View Payments
 
 Endpoint: GET /payments
 Use Case: US-BABY-007 (View Payments)
 Description: Babysitter views payment records associated with bookings.
+```
 
 GET /payments
+```
 Review Management (Babysitter Perspective)
 View Reviews
 
 Endpoint: GET /reviews
 Use Case: US-BABY-008 (View Reviews)
 Description: Babysitter views ratings and feedback left by parents.
-
+```
 GET /reviews
-
-
 
