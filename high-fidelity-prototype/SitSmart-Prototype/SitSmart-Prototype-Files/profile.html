@@ -9,7 +9,7 @@
             <div><strong>SitSmart</strong></div>
             <div>
                 <a href="dashboard.html">Dashboard</a>
-                <a href="browse.html">Browse</a>
+                <a href="index.html">Browse</a>
                 <a href="bookings.html">My Bookings</a>
                 <a href="messages.html">Messages</a>
                 <a href="login.html">Logout</a>
@@ -17,20 +17,19 @@
         </div>
         <div class="container">
             <div class="card">
-                <img src="images/Emma.jpg" class="profile-img">
-                <h2>Emma Johnson</h2>
-                <p class="stars">⭐⭐⭐⭐⭐</p>
-                <p>4.9 (32 reviews)</p>
-                <p><strong>$18/hr</strong>| 5 years experience</p>
-                <p>CPR certified babysitter experienced with toddlers and school-aged children. Reliable and patient.</p>
-
-                <h3>Availability</h3>
-                <p>Mon-Fri: 4Pm-10PM</p>
-                <p>Weekends: Flexible</p>
+                <img id="profileImg" class="profile-img">
+                <h2 id ="name">Babysitter Name</h2>
+                <p id="rating"></p>
+                <p id="rate"></p>
+                <p id="verified"></p>
+                <a id="bookLink">
+                    <button class="green-btn">Book Babysitter</button>
+                </a>
                 <a href="booking.html">
                     <button class="green-btn">Book Now</button>
                 </a>
             </div>
         </div>
+        <script src="script.js"></script>
     </body>
 </html>
