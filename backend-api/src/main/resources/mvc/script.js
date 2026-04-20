@@ -2,9 +2,9 @@ console.log("script is running");
 
 window.onload = function () {
   loadBabysitters();
-    loadProfile();
-    loadBookingPageName();
-    loadBookings();
+  loadProfile();
+  loadBookingPageName();
+  loadBookings();
 };
 
 function loadBabysitters(){
@@ -23,7 +23,7 @@ fetch("http://localhost:8080/babysitters")
     <h3>${sitter.name} ⭐ ${sitter.rating}</h3>
     <p>${sitter.hourlyRate}/hr</p>
     <p>Verified: ${sitter.verified ? "Yes ✅" : "No ❌"}</p>
-    <a href="profile.html">
+    <a href="profile.html?name=${encodeURIComponent(sitter.name)}">
         <button>View Profile</button>
     </a>
     `;
@@ -32,14 +32,13 @@ fetch("http://localhost:8080/babysitters")
 });
 
  });
-}
 
+}
  function bookBabysitter(){
     const date = document.getElementById("date").value;
     const start= document.getElementById("startTime").value;
     const end= document.getElementById("endTime").value;
     console.log("Time selected:", time);
-
 
     const params = new URLSearchParams(window.location.search);
     const babysitterName = params.get("name");
@@ -48,7 +47,6 @@ fetch("http://localhost:8080/babysitters")
         alert("Please select a time");
         return;
     }
-
     const booking = {
         babysitterName: babysitterName,
         date: date,
@@ -79,19 +77,23 @@ fetch("http://localhost:8080/babysitters")
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
 
-  const nameEl = document.getElementById("name");
-  if (!nameEl || !name) return;
+  console.log("URL name:", name);
+
+  if (!name) return;
 
   fetch("http://localhost:8080/babysitters")
     .then(res => res.json())
     .then(data => {
-      const sitter = data.find(s => s.name === name);
+      const sitter = data.find(s => s.name.toLowerCase() === name.toLowerCase());
+
+      console.log("Found sitter:", sitter);
 
       if (!sitter) return;
 
       document.getElementById("name").innerText = sitter.name;
       document.getElementById("rating").innerText = "Rating: ⭐ " + sitter.rating;
       document.getElementById("rate").innerText = "$" + sitter.hourlyRate + "/hr";
+      document.getElementById("bio").innerText = sitter.bio;
       document.getElementById("verified").innerText =
         sitter.verified ? "✔ Verified" : "⚠ Not Verified";
 
@@ -100,7 +102,7 @@ fetch("http://localhost:8080/babysitters")
       document.getElementById("bookLink").href =
         "booking.html?name=" + encodeURIComponent(sitter.name);
     })
-     .catch(err => console.error(err));
+     .catch(err => console.log("ERROR:", err));
 }
 
 function loadBookingPageName() {
@@ -110,7 +112,7 @@ function loadBookingPageName() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
 
-  if (name && title) {
+  if (name) {
     title.innerText = "Book " + name;
   }
 }
@@ -131,23 +133,6 @@ function loadBookingPageData() {
       console.log("Loaded sitter:", currentSitter);
     });
 }
-
-  function calculatePrice(){
-    const start = parseInt(document.getElementById("startTime").value);
-    const end = parseInt(document.getElementById("endTime").value);
-
-    if(!start || !end || !currentSitter) return;
-
-    const hours = end - start;
-
-    if(hours <= 0){
-        document.getElementById("price").innerText = "0";
-        return;
-    }
-
-    const total = hours * currentSitter.hourlyRate;
-    document.getElementById("price").innerText = total;
-  }
 
   function confirmBooking() {
   const params = new URLSearchParams(window.location.search);
@@ -179,7 +164,26 @@ function loadBookingPageData() {
   });
 }
 
-  function loadBookings() {
+ function calculatePrice(){
+    const start = parseInt(document.getElementById("startTime").value);
+    const end = parseInt(document.getElementById("endTime").value);
+
+    if(!start || !end) return;
+
+    const hours = end - start;
+
+    if(hours <= 0){
+        document.getElementById("price").innerText = "0";
+        return;
+    }
+
+    const rate = 18;
+    const total = hours * rate;
+
+    document.getElementById("price").innerText = total;
+  }
+
+ function loadBookings() {
   const container = document.getElementById("bookingsContainer");
 
   fetch("http://localhost:8080/bookings")
@@ -203,5 +207,3 @@ function loadBookingPageData() {
       });
     });
 }
-
- 
