@@ -40,10 +40,10 @@ public class ReviewController {
 
     }
 
-   @DeleteMapping("/{id}")
-   public Review deleteReview(@PathVariable Long id){
-    return reviewSerivce.deleteReview(id);
-   }
+    @DeleteMapping("/{id}")
+    public void deleteReview(@PathVariable Long id){
+        reviewSerivce.deleteReview(id);
 
+   }
 
 }
