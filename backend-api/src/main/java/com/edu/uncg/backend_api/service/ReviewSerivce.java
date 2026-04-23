@@ -20,8 +20,8 @@ public class ReviewSerivce {
 
     }
 
-    public Review deleteReview(Long id){
+    public void deleteReview(Long id){
     Review review = reviewRepository.findById(id).orElseThrow();
-    return reviewRepository.save(review);
-}
+    reviewRepository.delete(review);
+    }
 }
