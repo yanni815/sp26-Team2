@@ -13,6 +13,7 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String babysitterName;
     private String startTime;
     private String endTime;
     private String date;
@@ -23,9 +24,7 @@ public class Booking {
     @JoinColumn(name = "parent_id")
     private Parent parent;
 
-    @ManyToOne
-    private Babysitter babysitter;
-
+   
     public String getStatus(){
         return status;
     }
@@ -74,14 +73,6 @@ public class Booking {
         this.parent = parent;
     }
 
-     public Babysitter getBabysitter(){
-        return babysitter;
-    }
-
-    public void setBabysitter(Babysitter babysitter){
-        this.babysitter = babysitter;
-    }
-
     public Booking(){}
     public Long getId(){
         return id;
@@ -89,6 +80,14 @@ public class Booking {
 
     public void setId(Long id){
         this.id = id;
+    }
+
+     public String getBabysitterName(){
+        return babysitterName;
+    }
+
+    public void setBabysitterName(String babysitterName){
+        this.babysitterName = babysitterName;
     }
 }
 

@@ -21,7 +21,7 @@
                     <label>Date:</label><br>
                     <input id="date" input type="date"><br><br>
                     <label>Start Time:</label><br>
-                    <select id="startTime" onchange="calculatePrice()">
+                    <select id="startTime" onchange="calculateCost()">
                         <option value="">Select</option>
                         <option value="8">8 Am</option>
                         <option value="9">9 Am</option>
@@ -36,10 +36,10 @@
                         <option value="18">6 Pm</option>
                         <option value="19">7 Pm</option>
                         <option value="20">8 Pm</option>
-                    </select><br><br>
+                    </select>
 
                     <label>End Time:</label><br>
-                    <select id="endTime" onchange="calculatePrice()">
+                    <select id="endTime" onchange="calculateCost()">
                       <option value="">Select</option>
                       <option value="12">12 Pm</option>
                       <option value="13">1 Pm</option>
@@ -52,9 +52,9 @@
                       <option value="20">8 Pm</option>
                       <option value="21">9 Pm</option>
                       <option value="22">10 Pm</option>
-                    </select><br><br>
-                    <p><strong>Estimated Total:</strong> $<span id="price">0</span></p>
-                    <a href="bookings.html">
+                    </select>
+
+                    <p><strong>Estimated Total:</strong> $<span id="cost">0</span></p>
                         <button class="green-btn" onclick="confirmBooking()">
                             Confirm Booking
                         </button>

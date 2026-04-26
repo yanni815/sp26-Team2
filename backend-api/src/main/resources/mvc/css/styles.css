@@ -115,3 +115,13 @@ input{
 .message-input input{
     flex: 1;
 }
+
+.delete-btn{
+    background: purple;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    cursor: pointer;
+    margin-top: 8px;
+
+}

@@ -38,14 +38,14 @@ public class BookingService {
         booking.setStatus(updatedBooking.getStatus());
         booking.setTotalCost(updatedBooking.getTotalCost());
         booking.setParent(updatedBooking.getParent());
-        booking.setBabysitter(updatedBooking.getBabysitter());
+        
 
         return bookingRepository.save(booking);
     }
 
     public Booking deleteBooking(Long Id){
         Booking b = bookingRepository.findById(Id).orElseThrow();
-        b.setStatus("CANCLLED");
+        b.setStatus("CANCELLED");
         return bookingRepository.save(b);
     }
 
