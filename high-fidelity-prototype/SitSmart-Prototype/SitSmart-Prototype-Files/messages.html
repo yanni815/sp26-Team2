@@ -16,14 +16,14 @@
     <div class="container">
         <h2>Messages</h2>
         <div class="card">
-            <h3>Conversation with Emma</h3>
-            <p><strong>You:</strong>Hi Emma, are you available this Friday?</p>
-            <p><strong>Emma:</strong>Yes! I'm available after 4PM.</p>
+            <h3 id = "chatName"></h3>
+             <div id="chatBox"></div>
         </div>
         <div class="card">
-            <input type="text" placeholder="Type a message..." style="width:80%; padding:8px;">
-            <button>Send</button>
+            <input type="text"  id= "messageInput" placeholder="Type a message..." style="width:80%; padding:8px;">
+            <button onclick ="sendMessage()">Send</button>
         </div>
     </div>
+    <script src="script.js"></script>
     </body>
 </html>
