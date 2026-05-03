@@ -20,7 +20,7 @@ public class Message{
 
     @ManyToOne
     @JoinColumn(name = "receiver_id")
-    private User receiever;
+    private User receiver;
 
     public User getSender(){
         return sender;
@@ -32,11 +32,11 @@ public class Message{
 
 
       public User getReceiver(){
-        return receiever;
+        return receiver;
     }
 
     public void setReceiver(User receiver){
-        this.receiever = receiver;
+        this.receiver = receiver;
     }
 
      public Long getMessageID() {
