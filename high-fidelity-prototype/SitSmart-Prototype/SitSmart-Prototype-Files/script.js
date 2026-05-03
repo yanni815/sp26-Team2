@@ -221,7 +221,12 @@ function loadBookings() {
           <p>Total: $${booking.totalCost ?? 0}</p>
 
           <button onclick ="cancelBooking(${booking.id})" class ="delete-btn"> Cancel</button>
-          <p> Status: ${booking.status}</p>
+           <p>Status:</strong> ${booking.status || "Pending"}</p>
+
+           <button onclick="payNow(${booking.id})"
+          ${booking.status === "PAID" ? "disabled" : ""}>
+           ${booking.status === "PAID" ? "Paid" : "Pay Now"}
+           </button>
           <p style="color: ${booking.status == "CANCELLED" ? "red" : "green"};>
           ${booking.status}
           </p>
@@ -245,6 +250,31 @@ function cancelBooking(id) {
     })
     .catch(err => console.error("Delete error:", err));
 }
+
+
+function payNow(id) {
+ fetch(`http://localhost:8080/bookings/${id}`)
+    .then(res => res.json())
+    .then(booking => {
+      return fetch(`http://localhost:8080/bookings/${id}`,{
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ...booking,
+        status: "PAID"
+      })
+
+    });
+})
+.then(() => loadBookings()) // refresh page
+  .catch(err => {
+    console.error("Payment error:", err);
+  });
+
+}
+
 window.onload = function () {
   loadBabysitters();
   loadProfile();
