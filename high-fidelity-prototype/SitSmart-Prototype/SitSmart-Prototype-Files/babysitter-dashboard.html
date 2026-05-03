@@ -9,19 +9,22 @@
 <div class="navbar">
     <div><strong>SitSmart</strong></div>
     <div>
-        <a href="babysitter-profile.html">My Profile</a>
-        <a href="babysitter-bookings.html">My Jobs</a>
-        <a href="messages.html">Messages</a>
-        <a href="babysitter-login.html">Logout</a>
+    <div>
+    <a href="babysitter-dashboard.html">Dashboard</a>
+    <a href="babysitter-profile.html">My Profile</a>
+    <a href="babysitter-bookings.html">My Jobs</a>
+    <a href="babysitter-messages.html">Messages</a>
+    <a href="babysitter-login.html">Logout</a>
+</div>
     </div>
 </div>
 
 <div class="container">
-    <h2>Welcome, Emma!</h2>
+    <h2 id="welcome">Welcome, Babysitter!</h2>
 
     <div class="card">
-        <h3>Upcoming Job</h3>
-        <p>No upcoming bookings.</p>
+        <h3>Upcoming Jobs</h3>
+        <div id="upcomingJobsContainer"></div>
     </div>
 
     <div class="card">
@@ -33,5 +36,6 @@
     </div>
 </div>
 
+<script src="babysitter.js"></script>
 </body>
 </html>

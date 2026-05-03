@@ -19,31 +19,27 @@ import com.edu.uncg.backend_api.service.ReviewSerivce;
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
+
     @Autowired
-    private ReviewSerivce reviewSerivce;
+    private ReviewSerivce reviewService;
 
     @PostMapping
     public Review createReview(@RequestBody Review review){
-        return reviewSerivce.save(review);
-
+        return reviewService.save(review);
     }
 
     @GetMapping
-    public List<Review> getallReviews(){
-        return reviewSerivce.getAll();
-
+    public List<Review> getAllReviews(){
+        return reviewService.getAll();
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public Review updateReview(@PathVariable Long id, @RequestBody Review review){
-        return reviewSerivce.save(review);
-
+        return reviewService.updateReview(id, review);
     }
 
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Long id){
-        reviewSerivce.deleteReview(id);
-
-   }
-
+        reviewService.deleteReview(id);
+    }
 }

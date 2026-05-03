@@ -34,16 +34,15 @@ public class MessageController {
    }
 
     @PutMapping("/{id}")
-     public Message updateMessage(@PathVariable Long id, @RequestBody Message message){
+    public Message updateMessage(@PathVariable Long id, @RequestBody Message message){
         return messageService.save(message);
 
     }
 
-     @DeleteMapping("/{id}")
-    public Message deleteMessage(@PathVariable Long id){
-         return messageService.deleteMessage(id);
-    }
+    @DeleteMapping("/{id}")
+    public void deleteMessage(@PathVariable Long id){
+        messageService.deleteMessage(id);
 
 }
 
-
+    }
