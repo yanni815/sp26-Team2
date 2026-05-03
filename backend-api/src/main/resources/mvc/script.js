@@ -1,39 +1,79 @@
 console.log("Script is running");
 
-function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+function signup() {
+  fetch("http://localhost:8080/users", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+      phone_number: document.getElementById("phone").value,
+      address: document.getElementById("address").value,
+      numberOfChildren: document.getElementById("children").value
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("SIGNUP RESPONSE:", data);
 
-  fetch("http://localhost:8080/login", {
+      const user = {
+        id: data.id || data.user?.id,
+        name: data.name || data.user?.name,
+        email: data.email || data.user?.email
+      };
+
+      localStorage.setItem("user", JSON.stringify(user));
+
+
+      window.location.href = "dashboard.html";
+    })
+    .catch(err => console.error("Signup error:", err));
+}
+
+async function login() {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  const response = await fetch("http://localhost:8080/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ email, password })
-  })
-    .then(res => res.json())
-    .then(parent => {
-      console.log("Parent from backend:", parent);
+  });
 
-      localStorage.setItem("parentName", parent.name);
+  const data = await response.json();
 
-      window.location.href = "dashboard.html";
-    })
-    .catch(err => console.error(err));
+  console.log("LOGIN RESPONSE:", data);
+
+  if (!data || !data.id) {
+    alert("Invalid login");
+    return;
+  }
+
+ 
+  window.location.href = "dashboard.html";
 }
-
 
 function loadParentName() {
   const name = localStorage.getItem("parentName");
 
-  const el = document.getElementById("userName");
-  if (!el) return;
+  console.log("LOADED FROM STORAGE:", name);
 
-  el.innerText = name ? `Welcome ${name}` : "Welcome Parent";
+  const el = document.getElementById("userName");
+
+  if (el) {
+    el.textContent = `Welcome ${name || "Parent"}`;
+  }
+
 }
 
 function loadBabysitters() {
   const container = document.getElementById("babysitterContainer");
+
   if (!container) return;
 
   fetch("http://localhost:8080/babysitters")
@@ -69,14 +109,14 @@ function loadProfile() {
   const params = new URLSearchParams(window.location.search);
   const nameFromURL = params.get("name");
 
-  console.log("URL name:", name);
+  console.log("URL name:", nameFromURL);
 
   if (!nameFromURL) return;
 
   fetch("http://localhost:8080/babysitters")
     .then(res => res.json())
     .then(data => {
-      const sitter = data.find(s => s.name() === nameFromURL);
+      const sitter = data.find(s => s.name === nameFromURL);
 
       console.log("Found sitter:", sitter);
 
@@ -234,25 +274,31 @@ function loadBookings() {
 
       container.innerHTML = "";
 
-      data.filter(booking => booking.status !== "cancelled")
-      data.forEach(booking => {
+      const filtered = data.filter(b => b.status !== "CANCELLED");
+
+      filtered.forEach(booking => {
+
         console.log("Booking:", booking);
 
         const card = document.createElement("div");
         card.className = "card";
+
+
 
         card.innerHTML = `
           <h3>${booking.babysitterName}</h3>
           <p>Date: ${booking.date}</p>
           <p>Time: ${booking.startTime} - ${booking.endTime}</p>
           <p>Total: $${booking.totalCost}</p>
-          <p>Status: ${booking.paid ? "PAID" : "Pending"}</p>
+
+          <p><strong>Status:</strong> ${booking.status || "Pending"}</p>
+
+          <button onclick="payNow(${booking.id})"
+          ${booking.status === "PAID" ? "disabled" : ""}>
+           ${booking.status === "PAID" ? "Paid" : "Pay Now"}
+           </button>
 
           <button onclick ="cancelBooking(${booking.id})" class ="delete-btn">Cancel</button>
-          <p> Status: ${booking.status}</p>
-              <p style="color: ${booking.status == "CANCELLED" ? "red" : "green"};>
-          ${booking.status}
-          </p>
         `;
 
         container.appendChild(card);
@@ -348,22 +394,29 @@ function sendMessage() {
   loadMessages();
 }
 
-function fakePayment() {
-  const statusEl = document.getElementById("paymentStatus");
-  if (!statusEl) return;
+function payNow(id) {
+  fetch(`http://localhost:8080/bookings/${id}`)
+    .then(res => res.json())
+    .then(booking => {
+      return fetch(`http://localhost:8080/bookings/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ...booking,
+          status: "PAID"
+        })
 
-  statusEl.innerText = "Processing payment...";
-
-  setTimeout(() => {
-    statusEl.innerText = "Payment Successful";
-
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get("name");
-
-    localStorage.setItem("paid_" + name, "true")
-  }, 1000);
+      });
+    })
+    .then(() => loadBookings()) // refresh page
+    .catch(err => {
+      console.error("Payment error:", err);
+    });
 
 }
+
 
 window.onload = function () {
   loadBabysitters();

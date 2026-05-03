@@ -1,38 +1,122 @@
 console.log("Script is running");
 
-function login(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+localStorage.setItem("userId", "1");
+localStorage.setItem("parentName", "Ruby Myers");
 
-  
-
-  fetch("http://localhost:8080/login", {
+function signup() {
+  fetch("http://localhost:8080/users", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+      phone_number: document.getElementById("phone").value,
+      address: document.getElementById("address").value,
+      numberOfChildren: document.getElementById("children").value
+    })
   })
-    .then(res => res.json()) 
-    .then(parent => {
-      console.log("Parent from backend:", parent);
+    .then(res => res.json())
+    .then(data => {
+      console.log("SIGNUP RESPONSE:", data);
 
-      localStorage.setItem("parentName", parent.name);
+  if (data?.id) {
+     localStorage.setItem("userId", data.id);
+    localStorage.setItem("parentName", data.name || "");
+  }
 
       window.location.href = "dashboard.html";
     })
-    .catch(err => console.error(err));
+    .catch(err => console.error("Signup error:", err));
+}
+
+
+ async function login() {
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+
+  
+  if(!email || !password){
+    alert("Enter email and password");
+    return;
   }
 
+  try{
+    const res = await fetch("http://localhost:8080/parents");
+    const parents = await res.json();
 
-  function loadParentName(){
-    const name = localStorage.getItem("parentName");
+    console.log("ALL PARENTS:", parents);
 
-    const el = document.getElementById("userName");
-    if(!el) return;
+    const parent = parents.find(p =>
+         p.email?.trim().toLowerCase() === email.toLowerCase() &&
+         String(p.password).trim() === password
+    );
 
-    el.innerText = name ? `Welcome ${name}` : "Welcome Parent";
+    console.log("FOUND PARENTS:", parent);
+
+    if(!parent){
+      alert("Invaild login");
+      return;
+    }
+    
+
+    localStorage.setItem("userId", String(parent.id));
+    localStorage.setItem("parentName", parent.name);
+
+    console.log("STORED userId:", localStorage.setItem("userId"));
+  
+
+    window.location.href = "dashboard.html";
+
+    
+    console.log("FOUND MATCH:", parent);
+
+  } catch(err) {
+    console.error(err);
+    alert("Login failed");
   }
+}
+
+ async function loadParentName() {
+   console.log("loadParentName running");
+
+  const el = document.getElementById("userName");
+  console.log("USER NAME ELEMENT:", el);
+  const userId = localStorage.getItem("userId");
+
+  if(!el) return;
+  
+  if(!userId || userId === "null" || userId === "undefined"){
+    if(el) el.textContent = "Welcome Parent"
+    return;
+  }
+
+  try{
+    const response = await fetch (`http://localhost:8080/parents/${userId}`);
+    const user = await response.json();
+
+    if(!response.ok){
+      throw new Error("Backened error: " + response.status);
+    }
+     console.log("PARENT FROM BACKEND:", user);
+
+    el.textContent = `Welcome ${
+      user.name || user.fullName || user.username || "Parent"
+    }`;
+
+  } catch (err) {
+    console.error(err);
+    el.textContent = "Welcome Parent";
+  }
+}
+
+    
+  
+  
+
+
 
 function loadBabysitters() {
   const container = document.getElementById("babysitterContainer");
@@ -69,7 +153,7 @@ function loadBabysitters() {
 
 
 function loadProfile() {
-  if(!document.getElementById("name")) return;
+  if (!document.getElementById("name")) return;
 
   const params = new URLSearchParams(window.location.search);
   const nameFromUrl = params.get("name");
@@ -94,34 +178,34 @@ function loadProfile() {
 
       }
       const nameEl = document.getElementById("name");
-      if(nameEl){
+      if (nameEl) {
         nameEl.innerText = sitter.name;
       }
 
       const ratingEl = document.getElementById("rating");
-      if(ratingEl){
+      if (ratingEl) {
         ratingEl.innerText = "Rating: ⭐" + sitter.rating;
       }
 
       const rateEl = document.getElementById("rate");
-      if(rateEl){
+      if (rateEl) {
         rateEl.innerText = "$" + sitter.hourlyRate + "/hr";
       }
-     
+
       const verifiedEl = document.getElementById("verified");
-      if(verifiedEl){
+      if (verifiedEl) {
         verifiedEl.innerText = sitter.verifiedStatus ? "✔ Verified" : "⚠ Not Verified";
       }
-      
+
       const messageLink = document.getElementById("messageLink");
-      if(!messageLink) {
-      console.error("messageLink not found in html.");
-      return;
+      if (!messageLink) {
+        console.error("messageLink not found in html.");
+        return;
       }
-      messageLink.href = 
+      messageLink.href =
         "messages.html?name=" + encodeURIComponent(sitter.name);
       console.log("Link set:", messageLink.href);
-    
+
       const bookLink = document.getElementById("bookLink");
       if (!bookLink) {
         console.error("bookLink not found in html.");
@@ -155,7 +239,7 @@ function calculateCurrentCost() {
   const startEl = parseInt(document.getElementById("startTime").value);
   const endEl = parseInt(document.getElementById("endTime").value);
 
-  if(!startEl || !endEl)return 0;
+  if (!startEl || !endEl) return 0;
 
   const start = parseInt(document.getElementById("startTime").value);
   const end = parseInt(document.getElementById("endTime").value);
@@ -180,11 +264,18 @@ console.log("Calculated cost is running");
 
 
 function confirmBooking() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+
   const date = document.getElementById("date").value;
   const start = document.getElementById("startTime").value;
   const end = document.getElementById("endTime").value;
 
   const cost = calculateCurrentCost();
+
+  console.log("Saving booking:", {
+    name, date, start, end, cost
+  });
 
   if (!name || !date || !start || !end || cost <= 0) {
     alert("Please complete all fileds.");
@@ -228,24 +319,31 @@ function loadBookings() {
       }
       container.innerHTML = "";
 
-      data.forEach(booking => {
+      const filtered = data.filter(b => b.status !== "CANCELLED");
+
+      filtered.forEach(booking => {
+
         console.log("Booking:", booking);
 
         const card = document.createElement("div");
         card.className = "card";
+
+        const paid = localStorage.getItem("paid_" + booking.babysitterName);
 
         card.innerHTML = `
           <h3>${booking.babysitterName || "Unknown Babysitter"}</h3>
           <p>Date: ${booking.date}</p>
           <p>Time: ${booking.startTime} - ${booking.endTime}</p>
           <p>Total: $${booking.totalCost ?? 0}</p>
-           <p>Status: ${booking.paid ? "PAID" : "Pending"}</p>
+
+           <p>Status:</strong> ${booking.status || "Pending"}</p>
+
+           <button onclick="payNow(${booking.id})"
+          ${booking.status === "PAID" ? "disabled" : ""}>
+           ${booking.status === "PAID" ? "Paid" : "Pay Now"}
+           </button>
 
           <button onclick ="cancelBooking(${booking.id})" class ="delete-btn"> Cancel</button>
-          <p> Status: ${booking.status}</p>
-          <p style="color: ${booking.status == "CANCELLED" ? "red" : "green"};>
-          ${booking.status}
-          </p>
         `;
 
         container.appendChild(card);
@@ -267,33 +365,33 @@ function cancelBooking(id) {
     .catch(err => console.error("Delete error:", err));
 }
 
-function loadReviews(){
+function loadReviews() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
 
   const container = document.getElementById("reviewsContainer");
-  if(!container)return;
+  if (!container) return;
 
   const reviews = JSON.parse(localStorage.getItem(name)) || [];
 
-  container.innerHTML= "";
+  container.innerHTML = "";
 
   reviews.forEach(r => {
     const p = document.createElement("p");
     p.innerText = "⭐" + r;
     container.appendChild(p);
-});
+  });
 
 }
 
-function addReview(){
+function addReview() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
 
   const input = document.getElementById("reviewInput");
   const review = input.value;
 
-  if(!review) return;
+  if (!review) return;
 
   let reviews = JSON.parse(localStorage.getItem(name)) || [];
   reviews.push(review);
@@ -304,59 +402,69 @@ function addReview(){
   loadReviews();
 }
 
-function loadMessages(){
-const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
+function loadMessages() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
 
-const chatBox = document.getElementById("chatBox");
-if(!chatBox) return;
+  const chatBox = document.getElementById("chatBox");
+  if (!chatBox) return;
 
-const messages = JSON.parse(localStorage.getItem("chat_" + name)) || [];
+  const messages = JSON.parse(localStorage.getItem("chat_" + name)) || [];
 
-chatBox.innerHTML = "";
+  chatBox.innerHTML = "";
 
-messages.forEach(msg =>{
-  const p = document.createElement("p");
-  p.innerText = msg;
-  chatBox.appendChild(p);
-});
+  messages.forEach(msg => {
+    const p = document.createElement("p");
+    p.innerText = msg;
+    chatBox.appendChild(p);
+  });
+
+}
+
+function sendMessage() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+
+  const input = document.getElementById("messageInput");
+  const msg = input.value;
+
+  if (!msg) return;
+
+  let messages = JSON.parse(localStorage.getItem("chat_" + name)) || [];
+  messages.push("You: " + msg);
+
+  localStorage.setItem("chat_" + name, JSON.stringify(messages));
+
+  input.value = "";
+  loadMessages();
+}
+
+function payNow(id) {
+ fetch(`http://localhost:8080/bookings/${id}`)
+    .then(res => res.json())
+    .then(booking => {
+      return fetch(`http://localhost:8080/bookings/${id}`,{
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ...booking,
+        status: "PAID"
+      })
+
+    });
+})
+.then(() => loadBookings()) // refresh page
+  .catch(err => {
+    console.error("Payment error:", err);
+  });
 
 }
 
-function sendMessage(){
-const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
 
-const input = document.getElementById("messageInput");
-const msg = input.value;
 
-if(!msg) return;
 
-let messages = JSON.parse(localStorage.getItem("chat_" + name)) || [];
-messages.push("You: " + msg);
-
-localStorage.setItem("chat_" + name, JSON.stringify(messages));
-
-input.value = "";
-loadMessages();
-}
-
-function fakePayment(){
-  const statusEl = document.getElementById("paymentStatus");
-  if(!statusEl) return;
-
-  statusEl.innerText = "Processing payment...";
-
-  setTimeout(() => {
-    statusEl.innerText = "Payment Successful";
-
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get("name");
-
-    localStorage.setItem("bookingStatus_" + name, "PAID");
-  }, 1000);
-
-}
 
 window.onload = function () {
   loadBabysitters();

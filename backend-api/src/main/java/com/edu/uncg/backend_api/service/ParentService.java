@@ -15,6 +15,10 @@ public class ParentService {
         return parentRepository.save(parent);
     }
 
+    public Parent findByEmail(String email){
+        return parentRepository.findByEmail(email).orElse(null);
+    }
+
     public List<Parent> getallParents(){
         return parentRepository.findAll();
     }
@@ -32,6 +36,23 @@ public class ParentService {
         return parentRepository.save(parent);
     }
 
-   
+    public Parent getParentById(Long id) {
+    return parentRepository.findById(id).orElse(null);
+}
+
+   public Parent login(String email, String password) {
+    Parent parent = parentRepository.findByEmail(email)
+            .orElse(null);
+
+    if (parent == null) {
+        return null;
+    }
+
+    if (!parent.getPassword().equals(password)) {
+        return null;
+    }
+
+    return parent;
+}
 
 }

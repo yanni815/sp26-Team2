@@ -1,4 +1,5 @@
 package com.edu.uncg.backend_api.controller;
+
 import com.edu.uncg.backend_api.entity.Parent;
 import com.edu.uncg.backend_api.service.ParentService;
 
@@ -20,19 +21,29 @@ public class ParentController {
     private ParentService service;
 
     @PostMapping
-    public Parent create(@RequestBody Parent parent){
+    public Parent create(@RequestBody Parent parent) {
         return service.createParent(parent);
     }
 
     @GetMapping
-    public List<Parent> getAll(){
+    public List<Parent> getAll() {
         return service.getallParents();
     }
 
     @PutMapping("/{id}")
-    public Parent update(@PathVariable Long id, @RequestBody Parent parent){
+    public Parent update(@PathVariable Long id, @RequestBody Parent parent) {
         return service.updateParent(id, parent);
     }
 
-   
+    @GetMapping("/{id}")
+    public Parent getById(@PathVariable Long id) {
+        return service.getParentById(id);
+    }
+
+    @PostMapping("/login")
+    public Parent login(@RequestBody Parent loginRequest) {
+        return service.login(loginRequest.getEmail(), loginRequest.getPassword());
+
+
+}
 }
