@@ -10,28 +10,30 @@
     <div class="card">
         <h2>SitSmart Babysitter Login</h2>
 
-        <label>Email</label>
-        <input type="text">
+        <form id="babysitterLoginForm">
+            <label>Email</label>
+            <input type="email" id="loginEmail" required>
 
-        <br><br>
+            <br><br>
 
-        <label>Password</label>
-        <input type="password">
+            <label>Password</label>
+            <input type="password" id="loginPassword" required>
 
-        <br><br>
+            <br><br>
 
-        <a href="babysitter-dashboard.html">
-            <button style="width:100%;">Login</button>
-        </a>
+            <button type="submit" style="width:100%;">Login</button>
+        </form>
 
-        <br><br>
+        <p id="loginMessage" style="margin-top:15px;"></p>
 
+        <br>
         <p>Don't have an account?</p>
-        <a href="babysitter-signup.html">
+        <a href="babysitter-sign-up.html">
             <button class="green-btn" style="width:100%;">Sign Up</button>
         </a>
     </div>
 </div>
 
+<script src="babysitter.js"></script>
 </body>
 </html>

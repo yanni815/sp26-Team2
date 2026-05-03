@@ -59,5 +59,9 @@ public class BookingController {
     public Booking declineBooking(@PathVariable Long id){
         return bookingService.declineBooking(id);
     }
-
+    
+     @GetMapping("/babysitter/{id}")
+    public List<Booking> getByBabysitter(@PathVariable Long id) {
+        return bookingService.getByBabysitter(id);
+    }
 }

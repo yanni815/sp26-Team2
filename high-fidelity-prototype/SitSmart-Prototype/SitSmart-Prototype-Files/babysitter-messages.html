@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SitSmart - Babysitter Messages</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="navbar">
+    <div><strong>SitSmart</strong></div>
+    <div>
+        <a href="babysitter-dashboard.html">Dashboard</a>
+        <a href="babysitter-profile.html">My Profile</a>
+        <a href="babysitter-bookings.html">My Jobs</a>
+        <a href="babysitter-login.html">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>Messages</h2>
+
+        <label>Select Parent</label>
+        <select id="parentSelect" style="width:100%; padding:10px;"></select>
+
+        <div id="chatMessages" style="margin-top:20px;"></div>
+
+        <div class="message-input" style="margin-top:20px;">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button onclick="sendBabysitterMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script src="babysitter.js"></script>
+</body>
+</html>
