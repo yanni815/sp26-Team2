@@ -15,53 +15,57 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-@CrossOrigin(origins = "*" )
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/bookings")
 public class BookingController {
-     @Autowired
+
+    @Autowired
     private BookingService bookingService;
 
     @PostMapping
-    public Booking createBooking(@RequestBody Booking booking){
+    public Booking createBooking(@RequestBody Booking booking) {
         return bookingService.createBooking(booking);
     }
 
-   
     @GetMapping
     public List<Booking> getAllBookings() {
         return bookingService.getAllBookings();
     }
 
-   
     @GetMapping("/{id}")
     public Booking getBooking(@PathVariable Long id) {
         return bookingService.getBookingById(id);
     }
 
-
     @PutMapping("/{id}")
-    public Booking updateBooking(@PathVariable Long id, @RequestBody Booking booking){
+    public Booking updateBooking(@PathVariable Long id, @RequestBody Booking booking) {
         return bookingService.updateBooking(id, booking);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBooking(@PathVariable Long id){
+    public void deleteBooking(@PathVariable Long id) {
         bookingService.deleteBooking(id);
     }
 
     @PutMapping("/{id}/accept")
-    public Booking acceptBooking(@PathVariable Long id){
+    public Booking acceptBooking(@PathVariable Long id) {
         return bookingService.acceptBooking(id);
     }
 
     @PutMapping("/{id}/decline")
-    public Booking declineBooking(@PathVariable Long id){
+    public Booking declineBooking(@PathVariable Long id) {
         return bookingService.declineBooking(id);
     }
-    
-     @GetMapping("/babysitter/{id}")
+
+    @GetMapping("/babysitter/{id}")
     public List<Booking> getByBabysitter(@PathVariable Long id) {
         return bookingService.getByBabysitter(id);
+    }
+
+    @GetMapping("/parent/{id}")
+    public List<Booking> getByParent(@PathVariable Long id) {
+        return bookingService.getByParent(id);
     }
 }

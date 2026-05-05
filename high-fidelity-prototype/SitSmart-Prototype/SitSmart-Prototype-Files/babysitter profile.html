@@ -11,36 +11,61 @@
     <div>
         <a href="babysitter-dashboard.html">Dashboard</a>
         <a href="babysitter-bookings.html">My Jobs</a>
-        <a href="messages.html">Messages</a>
         <a href="babysitter-login.html">Logout</a>
     </div>
 </div>
 
 <div class="container">
     <div class="card">
-        
         <h2>Edit Profile</h2>
 
-        <label>Full Name</label>
-        <input type="text" value="Emma Johnson">
+        <form id="babysitterProfileForm">
+            <label>Full Name</label>
+            <input type="text" id="profileName" required>
 
-        <label>Hourly Rate</label>
-        <input type="number" value="18">
+            <label>Email</label>
+            <input type="email" id="profileEmail" required>
 
-        <label>Experience (years)</label>
-        <input type="number" value="5">
+            <label>Password</label>
+            <input type="password" id="profilePassword" required>
 
-        <label>Bio</label>
-        <input type="text" value="CPR certified babysitter experienced with toddlers.">
+            <label>Phone Number</label>
+            <input type="text" id="profilePhone" required>
 
-        <label>Availability</label>
-        <input type="text" value="Mon-Fri: 4PM-10PM">
+            <label>Hourly Rate</label>
+            <input type="number" id="profileRate" min="0" step="0.01" required>
 
-        <br><br>
+            <label>Rating</label>
+            <input type="number" id="profileRating" min="0" max="5" step="0.1">
 
-        <button class="green-btn">Save Changes</button>
+            <label>Verified Status</label>
+            <input type="text" id="profileVerified" readonly>
+
+            <label>Bio</label>
+            <input type="text" id="profileBio" placeholder="Optional">
+
+            <label>Availability</label>
+            <input type="text" id="profileAvailability" placeholder="Optional">
+
+            <br><br>
+
+            <div class="card">
+                <h3>Reviews</h3>
+                <p>These are reviews parents have given you.</p>
+                <div id="reviewsContainer"></div>
+            </div>
+
+            <button type="button" class="delete-btn" onclick="deleteBabysitterProfile()">
+                Delete Profile
+            </button>
+
+            <button type="submit" class="green-btn">Save Changes</button>
+        </form>
+
+        <p id="profileMessage" style="margin-top:15px;"></p>
     </div>
 </div>
- <script src="babysitter.js"></script>
+
+<script src="babysitter.js"></script>
 </body>
 </html>

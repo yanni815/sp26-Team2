@@ -35,6 +35,7 @@ public class BookingService {
         booking.setStartTime(updatedBooking.getStartTime());
         booking.setEndTime(updatedBooking.getEndTime());
         booking.setTotalCost(updatedBooking.getTotalCost());
+        booking.setStatus(updatedBooking.getStatus());
         booking.setParent(updatedBooking.getParent());
         booking.setStatus(updatedBooking.getStatus());
          booking.setBabysitter(updatedBooking.getBabysitter());
@@ -62,5 +63,9 @@ public class BookingService {
 
     public List<Booking> getByBabysitter(Long id) {
         return bookingRepository.findByBabysitterId(id);
+    }
+
+    public List<Booking> getByParent(Long id) {
+        return bookingRepository.findByParentId(id);
     }
 }

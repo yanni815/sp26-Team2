@@ -45,17 +45,19 @@ public class BabysitterService {
     public Babysitter updateBabysitter(Long id, Babysitter updated) {
         Babysitter babysitter = babysitterRepository.findById(id).orElseThrow();
 
-        babysitter.setName(updated.getName());
-        babysitter.setEmail(updated.getEmail());
-        babysitter.setPassword(updated.getPassword());
-        babysitter.setPhoneNumber(updated.getPhoneNumber());
-        babysitter.setHourlyRate(updated.getHourlyRate());
-        babysitter.setRating(updated.getRating());
-        babysitter.setVerifiedStatus(updated.isVerifiedStatus());
+    babysitter.setName(updated.getName());
+    babysitter.setEmail(updated.getEmail());
+    babysitter.setPassword(updated.getPassword());
+    babysitter.setPhoneNumber(updated.getPhoneNumber());
+    babysitter.setHourlyRate(updated.getHourlyRate());
+    babysitter.setRating(updated.getRating());
+    babysitter.setVerifiedStatus(updated.isVerifiedStatus());
 
-        return babysitterRepository.save(babysitter);
+    babysitter.setBio(updated.getBio());
+    babysitter.setAvailability(updated.getAvailability());
+
+    return babysitterRepository.save(babysitter);
     }
-
     public void deleteBabysitter(Long id) {
         Babysitter babysitter = babysitterRepository.findById(id).orElseThrow();
 

@@ -9,6 +9,12 @@ function getBabysitterName() {
   return localStorage.getItem("babysitterName") || "";
 }
 
+function formatDateOnly(value) {
+  if (!value) return "";
+  const text = String(value);
+  return text.includes("T") ? text.split("T")[0] : text;
+}
+
 async function fetchAllBabysitters() {
   const response = await fetch(`${API_BASE}/babysitters`);
   if (!response.ok) {
@@ -21,6 +27,14 @@ async function fetchAllBookings() {
   const response = await fetch(`${API_BASE}/bookings`);
   if (!response.ok) {
     throw new Error("Failed to load bookings");
+  }
+  return response.json();
+}
+
+async function fetchAllParents() {
+  const response = await fetch(`${API_BASE}/parents`);
+  if (!response.ok) {
+    throw new Error("Failed to load parents");
   }
   return response.json();
 }
@@ -62,7 +76,9 @@ async function createBabysitter(event) {
     phoneNumber,
     hourlyRate,
     rating: 0,
-    verifiedStatus: false
+    verifiedStatus: false,
+    bio: "",
+    availability: ""
   };
 
   try {
@@ -105,7 +121,7 @@ async function loginBabysitter(event) {
   try {
     const babysitters = await fetchAllBabysitters();
     const babysitter = babysitters.find(
-      s => String(s.email).toLowerCase() === email.toLowerCase() && s.password === password
+      s => String(s.email || "").toLowerCase() === email.toLowerCase() && String(s.password || "") === password
     );
 
     if (!babysitter) {
@@ -141,7 +157,7 @@ async function loadBabysitterDashboard() {
     const bookings = await fetchAllBookings();
 
     const myBookings = bookings
-      .filter(booking => booking.babysitter?.id=== babysitterId)
+      .filter(booking => Number(booking.babysitter?.id) === getBabysitterId())
       .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
 
     container.innerHTML = "";
@@ -156,8 +172,9 @@ async function loadBabysitterDashboard() {
       card.className = "card";
 
       card.innerHTML = `
-        <h3>${booking.babysitter?.name || "Babysitter Job"}</h3>
-        <p><strong>Date:</strong> ${booking.date || "N/A"}</p>
+        <h3>Booking</h3>
+        <p><strong>Parent:</strong> ${booking.parent?.name || `Parent #${booking.parent?.id || "N/A"}`}</p>
+        <p><strong>Date:</strong> ${formatDateOnly(booking.date) || "N/A"}</p>
         <p><strong>Time:</strong> ${booking.startTime || "N/A"} - ${booking.endTime || "N/A"}</p>
         <p><strong>Total:</strong> $${booking.totalCost ?? 0}</p>
         <p><strong>Status:</strong> ${booking.status || "UNKNOWN"}</p>
@@ -201,9 +218,8 @@ async function loadBabysitterProfile() {
     if (rateInput) rateInput.value = sitter.hourlyRate ?? "";
     if (ratingInput) ratingInput.value = sitter.rating ?? 0;
     if (verifiedInput) verifiedInput.value = sitter.verifiedStatus ? "Yes" : "No";
-
-    if (bioInput && sitter.bio) bioInput.value = sitter.bio;
-    if (availabilityInput && sitter.availability) availabilityInput.value = sitter.availability;
+    if (bioInput) bioInput.value = sitter.bio || "";
+    if (availabilityInput) availabilityInput.value = sitter.availability || "";
   } catch (error) {
     console.error(error);
     setMessage("profileMessage", "Could not load your profile.", true);
@@ -227,7 +243,9 @@ async function saveBabysitterProfile(event) {
     phoneNumber: document.getElementById("profilePhone").value.trim(),
     hourlyRate: Number(document.getElementById("profileRate").value),
     rating: Number(document.getElementById("profileRating").value || 0),
-    verifiedStatus: document.getElementById("profileVerified").value === "Yes"
+    verifiedStatus: document.getElementById("profileVerified").value === "Yes",
+    bio: document.getElementById("profileBio").value.trim(),
+    availability: document.getElementById("profileAvailability").value.trim()
   };
 
   try {
@@ -250,7 +268,7 @@ async function saveBabysitterProfile(event) {
     setMessage("profileMessage", "Profile updated successfully.");
   } catch (error) {
     console.error(error);
-    setMessage("profileMessage", "Save failed. Your backend needs PUT /babysitters/{id}.", true);
+    setMessage("profileMessage", "Save failed. Check the backend PUT /babysitters/{id}.", true);
   }
 }
 
@@ -260,12 +278,12 @@ async function loadBabysitterBookings() {
   const container = document.getElementById("bookingsContainer");
   if (!container) return;
 
-  const babysitterId = getBabysitterId();
-
   try {
     const bookings = await fetchAllBookings();
+    const babysitterId = getBabysitterId();
+
     const myBookings = bookings.filter(
-      booking =>booking.babysitter?.id === babysitterId
+      booking => Number(booking.babysitter?.id) === babysitterId
     );
 
     container.innerHTML = "";
@@ -280,8 +298,9 @@ async function loadBabysitterBookings() {
       card.className = "card";
 
       card.innerHTML = `
-        <h3>${booking.babysitter?.name || "Babysitter Job"}</h3>
-        <p><strong>Date:</strong> ${booking.date || "N/A"}</p>
+        <h3>Booking</h3>
+        <p><strong>Parent:</strong> ${booking.parent?.name || `Parent #${booking.parent?.id || "N/A"}`}</p>
+        <p><strong>Date:</strong> ${formatDateOnly(booking.date) || "N/A"}</p>
         <p><strong>Time:</strong> ${booking.startTime || "N/A"} - ${booking.endTime || "N/A"}</p>
         <p><strong>Total:</strong> $${booking.totalCost ?? 0}</p>
         <p><strong>Status:</strong> ${booking.status || "UNKNOWN"}</p>
@@ -352,9 +371,7 @@ async function loadReviews() {
       return;
     }
 
-    const myReviews = data.filter(review => {
-      return Number(review.babysitter?.id) === babysitterId;
-    });
+    const myReviews = data.filter(review => Number(review.babysitter?.id) === babysitterId);
 
     if (myReviews.length === 0) {
       container.innerHTML = "<p>No reviews for your profile yet.</p>";
@@ -366,9 +383,8 @@ async function loadReviews() {
       card.className = "card";
 
       card.innerHTML = `
-        <p><strong>Rating:</strong> ⭐ ${review.rating}</p>
-        <p>${review.comment}</p>
-        <button class="delete-btn" onclick="deleteReview(${review.reviewID})">Delete Review</button>
+        <p><strong>Rating:</strong> ⭐ ${review.rating ?? 0}</p>
+        <p>${review.comment || ""}</p>
       `;
 
       container.appendChild(card);
@@ -379,81 +395,19 @@ async function loadReviews() {
   }
 }
 
-async function deleteReview(reviewId) {
-  if (!confirm("Delete this review?")) return;
-
-  try {
-    const response = await fetch(`${API_BASE}/reviews/${reviewId}`, {
-      method: "DELETE"
-    });
-
-    if (!response.ok) {
-      throw new Error("Delete failed");
-    }
-
-    await loadReviews();
-  } catch (error) {
-    console.error(error);
-    alert("Could not delete review.");
-  }
-}
-
-async function addReview() {
-  const input = document.getElementById("reviewInput");
-  if (!input) return;
-
-  const comment = input.value.trim();
-  if (!comment) {
-    alert("Enter a review first.");
-    return;
-  }
-
-  const babysitterId = getBabysitterId();
-
-  const review = {
-    comment,
-    rating: 5,
-    babysitter: {
-      id: babysitterId
-    }
-  };
-
-  try {
-    const response = await fetch(`${API_BASE}/reviews`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(review)
-    });
-
-    if (!response.ok) {
-      throw new Error("Review failed");
-    }
-
-    input.value = "";
-    await loadReviews();
-  } catch (error) {
-    console.error(error);
-    alert("Could not submit review.");
-  }
-}
-
-async function fetchAllParents() {
-  const response = await fetch(`${API_BASE}/parents`);
-  if (!response.ok) {
-    throw new Error("Failed to load parents");
-  }
-  return response.json();
-}
-
 async function loadParentDropdown() {
   const select = document.getElementById("parentSelect");
   if (!select) return;
 
   try {
     const parents = await fetchAllParents();
+
     select.innerHTML = `<option value="">Select a parent</option>`;
+
+    if (!Array.isArray(parents) || parents.length === 0) {
+      select.innerHTML = `<option value="">No parents available yet</option>`;
+      return;
+    }
 
     parents.forEach(parent => {
       const option = document.createElement("option");
@@ -472,7 +426,14 @@ async function loadConversation() {
   const parentId = document.getElementById("parentSelect")?.value;
   const babysitterId = getBabysitterId();
 
-  if (!container || !parentId || !babysitterId) return;
+  if (!container) return;
+
+  if (!parentId) {
+    container.innerHTML = "<p>Select a parent to view the conversation.</p>";
+    return;
+  }
+
+  if (!babysitterId) return;
 
   try {
     const response = await fetch(`${API_BASE}/messages`);
@@ -481,8 +442,8 @@ async function loadConversation() {
     const selectedParentId = Number(parentId);
 
     const conversation = messages.filter(message => {
-      const senderId = message.sender?.id;
-      const receiverId = message.receiver?.id;
+      const senderId = Number(message.sender?.id);
+      const receiverId = Number(message.receiver?.id);
 
       return (
         (senderId === babysitterId && receiverId === selectedParentId) ||
@@ -507,8 +468,8 @@ async function loadConversation() {
       : (message.sender?.name || "Parent");
 
       bubble.innerHTML = `
-        <p><strong>${senderName}:</strong> ${message.content || ""}</p>
-        <p><small>${message.timestamp || ""}</small></p>
+        <p><strong>${fromMe ? "You" : (message.sender?.name || "Parent")}:</strong> ${message.content || ""}</p>
+        <p><small>${formatDateOnly(message.timestamp)}</small></p>
       `;
 
       container.appendChild(bubble);
@@ -543,7 +504,7 @@ async function sendBabysitterMessage() {
       },
       body: JSON.stringify({
         content,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString().split("T")[0]
       })
     });
 
@@ -591,19 +552,13 @@ async function deleteBabysitterProfile() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("babysitterSignupForm");
-  if (signupForm) {
-    signupForm.addEventListener("submit", createBabysitter);
-  }
+  if (signupForm) signupForm.addEventListener("submit", createBabysitter);
 
   const loginForm = document.getElementById("babysitterLoginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", loginBabysitter);
-  }
+  if (loginForm) loginForm.addEventListener("submit", loginBabysitter);
 
   const profileForm = document.getElementById("babysitterProfileForm");
-  if (profileForm) {
-    profileForm.addEventListener("submit", saveBabysitterProfile);
-  }
+  if (profileForm) profileForm.addEventListener("submit", saveBabysitterProfile);
 
   if (document.getElementById("welcome")) {
     loadBabysitterDashboard();
@@ -617,12 +572,21 @@ document.addEventListener("DOMContentLoaded", () => {
     loadBabysitterBookings();
   }
 
- document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("reviewsContainer")) loadReviews();
-  if (document.getElementById("parentSelect")) loadParentDropdown();
+  if (document.getElementById("reviewsContainer")) {
+    loadReviews();
+  }
+
+  if (document.getElementById("parentSelect")) {
+    loadParentDropdown();
+
+    const parentSelect = document.getElementById("parentSelect");
+    if (parentSelect) {
+      parentSelect.addEventListener("change", loadConversation);
+    }
+  }
+
   if (document.getElementById("chatMessages")) {
-    document.getElementById("parentSelect")
-      ?.addEventListener("change", loadConversation);
+    loadConversation();
   }
 });
 })

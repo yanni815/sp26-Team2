@@ -4,23 +4,27 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Babysitter extends User {
+
     private double hourlyRate;
     private double rating;
     private boolean verifiedStatus;
 
-    public double getHourlyRate(){
+    private String bio;
+    private String availability;
+
+    public double getHourlyRate() {
         return hourlyRate;
     }
 
-    public void setHourlyRate(double hourlyRate){
+    public void setHourlyRate(double hourlyRate) {
         this.hourlyRate = hourlyRate;
     }
 
-     public double getRating(){
+    public double getRating() {
         return rating;
     }
 
-     public void setRating(double rating){
+    public void setRating(double rating) {
         this.rating = rating;
     }
 
@@ -32,5 +36,19 @@ public class Babysitter extends User {
         this.verifiedStatus = verifiedStatus;
     }
 
+    public String getBio() {
+        return bio;
+    }
 
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(String availability) {
+        this.availability = availability;
+    }
 }
