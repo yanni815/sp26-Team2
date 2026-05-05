@@ -133,6 +133,7 @@ async function loadBabysitterDashboard() {
     welcome.textContent = `Welcome, ${name || "Babysitter"}!`;
   }
 
+  const babysitterId = getBabysitterId();
   const container = document.getElementById("upcomingJobsContainer");
   if (!container) return;
 
@@ -140,7 +141,7 @@ async function loadBabysitterDashboard() {
     const bookings = await fetchAllBookings();
 
     const myBookings = bookings
-      .filter(booking => String(booking.babysitterName || "").toLowerCase() === name.toLowerCase())
+      .filter(booking => booking.babysitter?.id=== babysitterId)
       .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
 
     container.innerHTML = "";
@@ -155,7 +156,7 @@ async function loadBabysitterDashboard() {
       card.className = "card";
 
       card.innerHTML = `
-        <h3>${booking.babysitterName || "Babysitter Job"}</h3>
+        <h3>${booking.babysitter?.name || "Babysitter Job"}</h3>
         <p><strong>Date:</strong> ${booking.date || "N/A"}</p>
         <p><strong>Time:</strong> ${booking.startTime || "N/A"} - ${booking.endTime || "N/A"}</p>
         <p><strong>Total:</strong> $${booking.totalCost ?? 0}</p>
@@ -259,12 +260,12 @@ async function loadBabysitterBookings() {
   const container = document.getElementById("bookingsContainer");
   if (!container) return;
 
-  const babysitterName = getBabysitterName();
+  const babysitterId = getBabysitterId();
 
   try {
     const bookings = await fetchAllBookings();
     const myBookings = bookings.filter(
-      booking => String(booking.babysitterName || "").toLowerCase() === babysitterName.toLowerCase()
+      booking =>booking.babysitter?.id === babysitterId
     );
 
     container.innerHTML = "";
@@ -279,7 +280,7 @@ async function loadBabysitterBookings() {
       card.className = "card";
 
       card.innerHTML = `
-        <h3>${booking.babysitterName || "Babysitter Job"}</h3>
+        <h3>${booking.babysitter?.name || "Babysitter Job"}</h3>
         <p><strong>Date:</strong> ${booking.date || "N/A"}</p>
         <p><strong>Time:</strong> ${booking.startTime || "N/A"} - ${booking.endTime || "N/A"}</p>
         <p><strong>Total:</strong> $${booking.totalCost ?? 0}</p>
@@ -500,10 +501,13 @@ async function loadConversation() {
       const bubble = document.createElement("div");
       bubble.className = "chat-box";
 
-      const fromMe = Number(message.sender?.id) === babysitterId;
+      const fromMe = message.sender?.id === babysitterId;
+      const senderName = fromMe 
+      ? "You" 
+      : (message.sender?.name || "Parent");
 
       bubble.innerHTML = `
-        <p><strong>${fromMe ? "You" : (message.sender?.name || "Parent")}:</strong> ${message.content || ""}</p>
+        <p><strong>${senderName}:</strong> ${message.content || ""}</p>
         <p><small>${message.timestamp || ""}</small></p>
       `;
 
@@ -613,18 +617,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loadBabysitterBookings();
   }
 
-  if (document.getElementById("reviewsContainer")) {
-    loadReviews();
-
-  if (document.getElementById("parentSelect")) {
-  loadParentDropdown();
-  }
-
-if (document.getElementById("chatMessages")) {
-  const parentSelect = document.getElementById("parentSelect");
-  if (parentSelect) {
-  parentSelect.addEventListener("change", loadConversation);
-  }
-  }
+ document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("reviewsContainer")) loadReviews();
+  if (document.getElementById("parentSelect")) loadParentDropdown();
+  if (document.getElementById("chatMessages")) {
+    document.getElementById("parentSelect")
+      ?.addEventListener("change", loadConversation);
   }
 });
+})

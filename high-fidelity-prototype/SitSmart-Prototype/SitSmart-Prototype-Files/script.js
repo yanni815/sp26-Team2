@@ -1,122 +1,35 @@
 console.log("Script is running");
 
-localStorage.setItem("userId", "1");
-localStorage.setItem("parentName", "Ruby Myers");
-
-function signup() {
-  fetch("http://localhost:8080/users", {
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  fetch("http://localhost:8080/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      name: document.getElementById("name").value,
-      email: document.getElementById("email").value,
-      password: document.getElementById("password").value,
-      phone_number: document.getElementById("phone").value,
-      address: document.getElementById("address").value,
-      numberOfChildren: document.getElementById("children").value
-    })
+    body: JSON.stringify({ email, password })
   })
     .then(res => res.json())
-    .then(data => {
-      console.log("SIGNUP RESPONSE:", data);
-
-  if (data?.id) {
-     localStorage.setItem("userId", data.id);
-    localStorage.setItem("parentName", data.name || "");
-  }
+    .then(parent => {
+      localStorage.setItem("parentName", parent.name);
+      localStorage.setItem("userId", parent.id);
 
       window.location.href = "dashboard.html";
     })
-    .catch(err => console.error("Signup error:", err));
+    .catch(err => console.error(err));
 }
 
+document.addEventListener("DOMContentLoaded", loadParentName);
 
- async function login() {
-const email = document.getElementById("email");
-const password = document.getElementById("password");
+function loadParentName() {
+  const name = localStorage.getItem("parentName");
 
-  
-  if(!email || !password){
-    alert("Enter email and password");
-    return;
-  }
+  const el = document.getElementById("parentName");
+  if (!el) return;
 
-  try{
-    const res = await fetch("http://localhost:8080/parents");
-    const parents = await res.json();
-
-    console.log("ALL PARENTS:", parents);
-
-    const parent = parents.find(p =>
-         p.email?.trim().toLowerCase() === email.toLowerCase() &&
-         String(p.password).trim() === password
-    );
-
-    console.log("FOUND PARENTS:", parent);
-
-    if(!parent){
-      alert("Invaild login");
-      return;
-    }
-    
-
-    localStorage.setItem("userId", String(parent.id));
-    localStorage.setItem("parentName", parent.name);
-
-    console.log("STORED userId:", localStorage.setItem("userId"));
-  
-
-    window.location.href = "dashboard.html";
-
-    
-    console.log("FOUND MATCH:", parent);
-
-  } catch(err) {
-    console.error(err);
-    alert("Login failed");
-  }
+  el.innerText = name ? `Welcome ${name}` : "Welcome Parent";
 }
-
- async function loadParentName() {
-   console.log("loadParentName running");
-
-  const el = document.getElementById("userName");
-  console.log("USER NAME ELEMENT:", el);
-  const userId = localStorage.getItem("userId");
-
-  if(!el) return;
-  
-  if(!userId || userId === "null" || userId === "undefined"){
-    if(el) el.textContent = "Welcome Parent"
-    return;
-  }
-
-  try{
-    const response = await fetch (`http://localhost:8080/parents/${userId}`);
-    const user = await response.json();
-
-    if(!response.ok){
-      throw new Error("Backened error: " + response.status);
-    }
-     console.log("PARENT FROM BACKEND:", user);
-
-    el.textContent = `Welcome ${
-      user.name || user.fullName || user.username || "Parent"
-    }`;
-
-  } catch (err) {
-    console.error(err);
-    el.textContent = "Welcome Parent";
-  }
-}
-
-    
-  
-  
-
-
 
 function loadBabysitters() {
   const container = document.getElementById("babysitterContainer");
@@ -137,7 +50,7 @@ function loadBabysitters() {
     <h3>${sitter.name} ⭐ ${sitter.rating}</h3>
     <p>${sitter.hourlyRate}/hr</p>
     <p>Verified: ${sitter.verifiedStatus ? "Yes ✅" : "No ❌"}</p>
-    <a href="profile.html?name=${encodeURIComponent(sitter.name)}">
+    <a href="profile.html?name=${encodeURIComponent(sitter.name)}&id${sitter.id}">
         <button>View Profile</button>
     </a>
     `;
@@ -147,28 +60,30 @@ function loadBabysitters() {
       });
 
     })
-    .catch(err => console.error(console.error(err)));
+    .catch(err => console.error(err));
 
 }
 
 
 function loadProfile() {
-  if (!document.getElementById("name")) return;
-
+  console.log("loadProfile START");
   const params = new URLSearchParams(window.location.search);
-  const nameFromUrl = params.get("name");
+  const sitterId = Number(params.get("id"));
+  const sitterName = params.get("name");
+  if (!sitterName) return;
 
-  if (!nameFromUrl) return;
-
-  if (!nameFromUrl) {
-    alert("Missing babysitter name");
-    return;
-  }
-
+  const nameEl = document.getElementById("name");
+     if (nameEl) {
+      nameEl.innerText = sitterName;
+    }
+  
   fetch("http://localhost:8080/babysitters")
     .then(res => res.json())
     .then(data => {
-      const sitter = data.find(s => s.name === nameFromUrl);
+
+      console.log("ALL babysitters:", data);
+      console.log("Looking for ID:", sitterId);
+      const sitter = data.find(s => Number(s.id) === sitterId);
 
       console.log("Found sitter:", sitter);
 
@@ -177,46 +92,46 @@ function loadProfile() {
         return;
 
       }
-      const nameEl = document.getElementById("name");
-      if (nameEl) {
-        nameEl.innerText = sitter.name;
-      }
-
       const ratingEl = document.getElementById("rating");
       if (ratingEl) {
-        ratingEl.innerText = "Rating: ⭐" + sitter.rating;
+        ratingEl.innerText = "Rating: ⭐ " + sitter.rating;
       }
 
       const rateEl = document.getElementById("rate");
       if (rateEl) {
         rateEl.innerText = "$" + sitter.hourlyRate + "/hr";
       }
-
       const verifiedEl = document.getElementById("verified");
       if (verifiedEl) {
         verifiedEl.innerText = sitter.verifiedStatus ? "✔ Verified" : "⚠ Not Verified";
       }
+
+      console.log("ABOUT TO GET bookLink");
+
+      const bookLink = document.getElementById("bookLink");
+       console.log("bookLink element:", bookLink);
+
+      if (!bookLink)  return;
+
+      
+
+      if (bookLink) {
+        bookLink.href = 
+        "booking.html?name=" + encodeURIComponent(sitter.name) + "&id=" + sitter.id;
+      }
+      console.log("Link set:", bookLink.href);
+
 
       const messageLink = document.getElementById("messageLink");
       if (!messageLink) {
         console.error("messageLink not found in html.");
         return;
       }
-      messageLink.href =
-        "messages.html?name=" + encodeURIComponent(sitter.name);
-      console.log("Link set:", messageLink.href);
+      messageLink.href = "messages.html?name=" + sitter.id;
+         
 
-      const bookLink = document.getElementById("bookLink");
-      if (!bookLink) {
-        console.error("bookLink not found in html.");
-        return;
-      }
-      bookLink.href =
-        "booking.html?name=" + encodeURIComponent(sitter.name);
-      console.log("Link set:", bookLink.href);
     });
 }
-
 
 
 
@@ -236,16 +151,13 @@ function loadBookingPageName() {
 
 
 function calculateCurrentCost() {
-  const startEl = parseInt(document.getElementById("startTime").value);
-  const endEl = parseInt(document.getElementById("endTime").value);
+  const startEl = document.getElementById("startTime").value;
+  const endEl = document.getElementById("endTime").value;
 
   if (!startEl || !endEl) return 0;
 
   const start = parseInt(document.getElementById("startTime").value);
   const end = parseInt(document.getElementById("endTime").value);
-
-
-  if (isNaN(start) || isNaN(end)) return 0;
 
   const hours = end - start;
   if (hours <= 0) return 0;
@@ -265,7 +177,9 @@ console.log("Calculated cost is running");
 
 function confirmBooking() {
   const params = new URLSearchParams(window.location.search);
+  const sitterId = params.get("id");
   const name = params.get("name");
+
 
   const date = document.getElementById("date").value;
   const start = document.getElementById("startTime").value;
@@ -273,17 +187,14 @@ function confirmBooking() {
 
   const cost = calculateCurrentCost();
 
-  console.log("Saving booking:", {
-    name, date, start, end, cost
-  });
-
-  if (!name || !date || !start || !end || cost <= 0) {
+  if (!sitterId|| !date || !start || !end || cost <= 0) {
     alert("Please complete all fileds.");
     return;
   }
 
   const booking = {
-    babysitterName: name,
+    parent: { id: Number(localStorage.getItem("userId")) },
+    babysitter: {id: sitterId},
     date,
     startTime: start,
     endTime: end,
@@ -298,20 +209,21 @@ function confirmBooking() {
     body: JSON.stringify(booking)
   })
     .then(() => {
-      document.getElementById("message").innerText =
+        document.getElementById("message").innerText =
         "Booking confirmed!";
     })
     .catch(err => console.error(err));
 }
 
 function loadBookings() {
+  console.log("loadBookings is running");
   const container = document.getElementById("bookingsContainer");
   if (!container) return;
 
   fetch("http://localhost:8080/bookings")
     .then(res => res.json())
     .then(data => {
-
+      console.log("RAW BOOKINGS:", data);
 
       if (!Array.isArray(data)) {
         console.log("Expected array but got:", data);
@@ -319,31 +231,30 @@ function loadBookings() {
       }
       container.innerHTML = "";
 
-      const filtered = data.filter(b => b.status !== "CANCELLED");
-
-      filtered.forEach(booking => {
-
+      data.forEach(booking => {
         console.log("Booking:", booking);
 
         const card = document.createElement("div");
         card.className = "card";
 
-        const paid = localStorage.getItem("paid_" + booking.babysitterName);
+         const paid = localStorage.getItem("paid_" + booking.babysitter?.name);
 
         card.innerHTML = `
-          <h3>${booking.babysitterName || "Unknown Babysitter"}</h3>
+          <h3>${booking.babysitter?.name|| "Unknown Babysitter"}</h3>
           <p>Date: ${booking.date}</p>
           <p>Time: ${booking.startTime} - ${booking.endTime}</p>
           <p>Total: $${booking.totalCost ?? 0}</p>
 
+          <button onclick ="cancelBooking(${booking.id})" class ="delete-btn"> Cancel</button>
            <p>Status:</strong> ${booking.status || "Pending"}</p>
 
            <button onclick="payNow(${booking.id})"
           ${booking.status === "PAID" ? "disabled" : ""}>
            ${booking.status === "PAID" ? "Paid" : "Pay Now"}
            </button>
-
-          <button onclick ="cancelBooking(${booking.id})" class ="delete-btn"> Cancel</button>
+          <p style= "color: ${booking.status == 'CANCELLED' ? 'red' : 'green'};">
+          ${booking.status || "Pending"}
+          </p>
         `;
 
         container.appendChild(card);
@@ -419,6 +330,7 @@ function loadMessages() {
     chatBox.appendChild(p);
   });
 
+   
 }
 
 function sendMessage() {
@@ -439,8 +351,10 @@ function sendMessage() {
   loadMessages();
 }
 
+
+
 function payNow(id) {
- fetch(`http://localhost:8080/bookings/${id}`)
+  fetch(`http://localhost:8080/bookings/${id}`)
     .then(res => res.json())
     .then(booking => {
       return fetch(`http://localhost:8080/bookings/${id}`,{
@@ -461,17 +375,12 @@ function payNow(id) {
   });
 
 }
-
-
-
-
-
-window.onload = function () {
-  loadBabysitters();
-  loadProfile();
-  loadBookingPageName();
-  loadBookings();
-  loadParentName();
-  loadReviews();
-  loadMessages();
-};
+window.onload= function () {
+loadProfile();
+loadBookings();
+loadBabysitters();
+loadParentName();
+loadBookingPageName();
+loadMessages();
+loadReviews();
+}
