@@ -42,7 +42,3 @@ P1 exits the app.
 2. Parent writes a review for the sitter.
 
 
-
-#### 7. Provider: Reply to Parent reviews
-1. Babysitter logs in and reads their review and replies.
-2. Babysitter exits.
