@@ -1,5 +1,7 @@
 package com.edu.uncg.backend_api.entity;
 
+
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

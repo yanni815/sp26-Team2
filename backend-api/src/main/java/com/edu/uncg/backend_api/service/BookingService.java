@@ -14,10 +14,11 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    
     public Booking createBooking(Booking booking) {
-        booking.setStatus("CREATED");
         return bookingRepository.save(booking);
     }
+
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
@@ -36,7 +37,8 @@ public class BookingService {
         booking.setTotalCost(updatedBooking.getTotalCost());
         booking.setStatus(updatedBooking.getStatus());
         booking.setParent(updatedBooking.getParent());
-        booking.setBabysitter(updatedBooking.getBabysitter());
+        booking.setStatus(updatedBooking.getStatus());
+         booking.setBabysitter(updatedBooking.getBabysitter());
 
         return bookingRepository.save(booking);
     }

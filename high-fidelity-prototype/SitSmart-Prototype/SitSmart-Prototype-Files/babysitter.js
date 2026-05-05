@@ -149,6 +149,7 @@ async function loadBabysitterDashboard() {
     welcome.textContent = `Welcome, ${name || "Babysitter"}!`;
   }
 
+  const babysitterId = getBabysitterId();
   const container = document.getElementById("upcomingJobsContainer");
   if (!container) return;
 
@@ -461,7 +462,10 @@ async function loadConversation() {
       const bubble = document.createElement("div");
       bubble.className = "chat-box";
 
-      const fromMe = Number(message.sender?.id) === babysitterId;
+      const fromMe = message.sender?.id === babysitterId;
+      const senderName = fromMe 
+      ? "You" 
+      : (message.sender?.name || "Parent");
 
       bubble.innerHTML = `
         <p><strong>${fromMe ? "You" : (message.sender?.name || "Parent")}:</strong> ${message.content || ""}</p>
@@ -585,3 +589,4 @@ document.addEventListener("DOMContentLoaded", () => {
     loadConversation();
   }
 });
+})
