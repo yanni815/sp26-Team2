@@ -328,3 +328,10 @@ GET /reviews
 | View bookings | GET /bookings | Babysitter views all bookings |
 | View payments | GET /payments | Babysitter views payment records |
 | View reviews | GET /reviews | Babysitter views feedback from parents |
+
+
+## How to Run ##
+1) Clone repository
+2) open in VSCode
+3) run Application
+4) open Login in LiveServer 
