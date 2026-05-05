@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>SitSmart - Booking</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
     <div class="navbar">
         <div><strong>SitSmart</strong></div>
         <div>
             <a href="dashboard.html">Dashboard</a>
             <a href="index.html">Browse</a>
-            <a href="booking.html">My Bookings</a>
+            <a href="bookings.html">My Bookings</a>
             <a href="messages.html">Messages</a>
             <a href="login.html">Logout</a>
         </div>
@@ -21,7 +19,8 @@
         <div class="card">
             <h2 id="babysitterName">Book a Babysitter</h2>
             <label>Date:</label><br>
-            <input id="date" input type="date"><br><br>
+            <input id="date" type="date"><br><br>
+
             <label>Start Time:</label><br>
             <select id="startTime" onchange="calculateCost()">
                 <option value="">Select</option>
@@ -55,16 +54,16 @@
                 <option value="21">9 Pm</option>
                 <option value="22">10 Pm</option>
             </select><br><br>
+
             <p><strong>Estimated Total:</strong> $<span id="cost">0</span></p>
-            <a href="bookings.html">
-                <button class="green-btn" onclick="confirmBooking()">
-                    Confirm Booking
-                </button>
-                <p id="message"></p>
-            </a>
+
+            <button class="green-btn" type="button" onclick="confirmBooking()">
+                Confirm Booking
+            </button>
+            <p id="message"></p>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
-
 </html>
