@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SitSmart - Messages</title>
-        <link rel="stylesheet" href="css/styles.css">
-    </head>
-    <body>
-        <div class="navbar">
-            <div><strong>SitSmart</strong></div>
+<head>
+    <title>SitSmart - Messages</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div><strong>SitSmart</strong></div>
+        <div>
             <a href="dashboard.html">Dashboard</a>
-                <a href="browse.html">Browse</a>
-                <a href="booking.html">My Bookings</a>
-                <a href="login.html">Logout</a>
+            <a href="index.html">Browse</a>
+            <a href="bookings.html">My Bookings</a>
+            <a href="login.html">Logout</a>
         </div>
     </div>
+
     <div class="container">
-        <h2>Messages</h2>
         <div class="card">
-            <h3 id = "chatName"></h3>
-             <div id="chatBox"></div>
-        </div>
-        <div class="card">
-            <input type="text"  id= "messageInput" placeholder="Type a message..." style="width:80%; padding:8px;">
-            <button onclick ="sendMessage()">Send</button>
+            <h2 id="chatName">Messages</h2>
+
+            <label>Select Babysitter</label>
+            <select id="babysitterSelect" style="width:100%; padding:10px;"></select>
+
+            <div id="chatBox" style="margin-top:20px;"></div>
+
+            <div class="message-input" style="margin-top:20px;">
+                <input type="text" id="messageInput" placeholder="Type a message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
         </div>
     </div>
+
     <script src="script.js"></script>
-    </body>
+</body>
 </html>

@@ -1,39 +1,44 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Sign Up</title>
-        <link rel="stylesheet" href="css/styles.css">
-    </head>
-    <body>
-        <div class="container" style="max-width: 500px; margin:auto; margin-top: 80px;">
-            <div class="card">
-                <h2>Create Parent Account</h2>
+<head>
+    <title>SitSmart - Parent Sign Up</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container" style="max-width: 500px; margin:auto; margin-top: 80px;">
+        <div class="card">
+            <h2>Create Parent Account</h2>
 
-                <form id="signupForm">
-                    <label>Full Name</label>
-                    <input id="name" placeholder="Full Name" required>
+            <form id="signupForm">
+                <label>Full Name</label>
+                <input id="name" placeholder="Full Name" required>
 
-                    <label>Email</label>
-                    <input id="email" type="email" placeholder="Email" required>
+                <label>Email</label>
+                <input id="email" type="email" placeholder="Email" required>
 
-                    <label>Password</label>
-                    <input id="password" type="password" placeholder="Password" required>
+                <label>Password</label>
+                <input id="password" type="password" placeholder="Password" required>
 
-                    <label>Phone Number</label>
-                    <input id="phone" placeholder="Phone Number" required>
+                <label>Phone Number</label>
+                <input id="phone" placeholder="Phone Number" required>
 
-                    <label>Address</label>
-                    <input id="address" placeholder="Address" required>
+                <label>Address</label>
+                <input id="address" placeholder="Address" required>
 
-                    <label>Number of Children</label>
-                    <input id="children" type="number" placeholder="Number of Children" min="1" required>
+                <label>Number of Children</label>
+                <input id="children" type="number" placeholder="Number of Children" min="1" required>
 
-                    <br><br>
-                    <button type="submit">Sign Up</button>
-                </form>
-            </div>
+                <br><br>
+                <button type="submit">Sign Up</button>
+            </form>
+
+            <p style="margin-top:15px;">
+                Already have an account?
+                <a href="login.html">Login here</a>
+            </p>
         </div>
+    </div>
 
-        <script src="script.js"></script>
-    </body>
+    <script src="script.js"></script>
+</body>
 </html>

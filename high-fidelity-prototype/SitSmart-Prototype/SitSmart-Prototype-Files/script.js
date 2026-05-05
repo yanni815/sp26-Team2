@@ -1,30 +1,56 @@
-console.log("Script is running");
-
 const API_BASE = "http://localhost:8080";
 
+let selectedBabysitter = null;
 let selectedBabysitterRate = 18;
+
+function getParentId() {
+  const raw = localStorage.getItem("userId");
+  return raw ? Number(raw) : null;
+}
+
+function getParentName() {
+  return localStorage.getItem("parentName") || "";
+}
+
+function formatDateOnly(value) {
+  if (!value) return "";
+  const text = String(value);
+  return text.includes("T") ? text.split("T")[0] : text;
+}
 
 async function fetchAllBabysitters() {
   const response = await fetch(`${API_BASE}/babysitters`);
-  if (!response.ok) {
-    throw new Error("Failed to load babysitters");
-  }
+  if (!response.ok) throw new Error("Failed to load babysitters");
   return response.json();
 }
 
 async function fetchAllBookings() {
   const response = await fetch(`${API_BASE}/bookings`);
-  if (!response.ok) {
-    throw new Error("Failed to load bookings");
-  }
+  if (!response.ok) throw new Error("Failed to load bookings");
+  return response.json();
+}
+
+async function fetchMyBookings(parentId) {
+  const response = await fetch(`${API_BASE}/bookings/parent/${parentId}`);
+  if (!response.ok) throw new Error("Failed to load parent bookings");
   return response.json();
 }
 
 async function fetchAllParents() {
   const response = await fetch(`${API_BASE}/parents`);
-  if (!response.ok) {
-    throw new Error("Failed to load parents");
-  }
+  if (!response.ok) throw new Error("Failed to load parents");
+  return response.json();
+}
+
+async function fetchAllMessages() {
+  const response = await fetch(`${API_BASE}/messages`);
+  if (!response.ok) throw new Error("Failed to load messages");
+  return response.json();
+}
+
+async function fetchAllReviews() {
+  const response = await fetch(`${API_BASE}/reviews`);
+  if (!response.ok) throw new Error("Failed to load reviews");
   return response.json();
 }
 
@@ -35,27 +61,37 @@ function setMessage(elementId, message, isError = false) {
   el.style.color = isError ? "crimson" : "green";
 }
 
+async function resolveSelectedBabysitter() {
+  if (selectedBabysitter) return selectedBabysitter;
+
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  const id = params.get("id");
+
+  const babysitters = await fetchAllBabysitters();
+
+  if (id) {
+    selectedBabysitter = babysitters.find(s => String(s.id) === String(id)) || null;
+    return selectedBabysitter;
+  }
+
+  if (name) {
+    selectedBabysitter = babysitters.find(s => String(s.name || "") === name) || null;
+    return selectedBabysitter;
+  }
+
+  return null;
+}
+
 async function signup(event) {
   if (event) event.preventDefault();
 
-  const nameEl = document.getElementById("name");
-  const emailEl = document.getElementById("email");
-  const passwordEl = document.getElementById("password");
-  const phoneEl = document.getElementById("phone");
-  const addressEl = document.getElementById("address");
-  const childrenEl = document.getElementById("children");
-
-  if (!nameEl || !emailEl || !passwordEl || !phoneEl || !addressEl || !childrenEl) {
-    alert("Missing signup fields.");
-    return;
-  }
-
-  const name = nameEl.value.trim();
-  const email = emailEl.value.trim();
-  const password = passwordEl.value.trim();
-  const phoneNumber = phoneEl.value.trim();
-  const address = addressEl.value.trim();
-  const numberOfChildren = Number(childrenEl.value);
+  const name = document.getElementById("name")?.value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value.trim();
+  const phoneNumber = document.getElementById("phone")?.value.trim();
+  const address = document.getElementById("address")?.value.trim();
+  const numberOfChildren = Number(document.getElementById("children")?.value);
 
   if (!name || !email || !password || !phoneNumber || !address || !numberOfChildren) {
     alert("Please fill out every field.");
@@ -78,18 +114,15 @@ async function signup(event) {
       })
     });
 
-    if (!response.ok) {
-      throw new Error("Signup failed");
-    }
+    if (!response.ok) throw new Error("Signup failed");
 
     const created = await response.json();
-
     localStorage.setItem("userId", String(created.id));
     localStorage.setItem("parentName", created.name || "");
 
     window.location.href = "dashboard.html";
   } catch (err) {
-    console.error("Signup error:", err);
+    console.error(err);
     alert("Could not create parent account.");
   }
 }
@@ -97,32 +130,27 @@ async function signup(event) {
 async function login(event) {
   if (event) event.preventDefault();
 
-  const emailEl = document.getElementById("email");
-  const passwordEl = document.getElementById("password");
-
-  if (!emailEl || !passwordEl) {
-    alert("Missing login fields.");
-    return;
-  }
-
-  const email = emailEl.value.trim();
-  const password = passwordEl.value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value.trim();
 
   if (!email || !password) {
-    alert("Enter email and password");
+    alert("Enter email and password.");
     return;
   }
 
   try {
-    const parents = await fetchAllParents();
+    const response = await fetch(`${API_BASE}/parents/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-    const parent = parents.find(p =>
-      String(p.email || "").trim().toLowerCase() === email.toLowerCase() &&
-      String(p.password || "").trim() === password
-    );
+    const parent = await response.json();
 
-    if (!parent) {
-      alert("Invalid login");
+    if (!response.ok || !parent || !parent.id) {
+      alert("Invalid login.");
       return;
     }
 
@@ -132,141 +160,124 @@ async function login(event) {
     window.location.href = "dashboard.html";
   } catch (err) {
     console.error(err);
-    alert("Login failed");
+    alert("Login failed.");
   }
 }
 
-function loadParentName() {
+async function loadParentName() {
   const el = document.getElementById("userName");
   if (!el) return;
 
-  const userId = localStorage.getItem("userId");
-
-  if (!userId || userId === "null" || userId === "undefined") {
+  const userId = getParentId();
+  if (!userId) {
     el.textContent = "Welcome Parent";
     return;
   }
 
-  fetch(`${API_BASE}/parents/${userId}`)
-    .then(async response => {
-      if (!response.ok) {
-        throw new Error(`Backend error: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(user => {
-      el.textContent = `Welcome ${user.name || "Parent"}`;
-    })
-    .catch(err => {
-      console.error(err);
-      el.textContent = "Welcome Parent";
-    });
+  try {
+    const response = await fetch(`${API_BASE}/parents/${userId}`);
+    if (!response.ok) throw new Error(`Backend error: ${response.status}`);
+
+    const user = await response.json();
+    el.textContent = `Welcome ${user.name || "Parent"}`;
+  } catch (err) {
+    console.error(err);
+    el.textContent = "Welcome Parent";
+  }
 }
 
-function loadBabysitters() {
+async function loadBabysitters() {
   const container = document.getElementById("babysitterContainer");
   if (!container) return;
 
-  fetch(`${API_BASE}/babysitters`)
-    .then(res => res.json())
-    .then(data => {
-      container.innerHTML = "";
+  try {
+    const data = await fetchAllBabysitters();
+    container.innerHTML = "";
 
-      data.forEach(sitter => {
-        const card = document.createElement("div");
-        card.className = "card";
+    data.forEach(sitter => {
+      const card = document.createElement("div");
+      card.className = "card";
 
-        card.innerHTML = `
-          <h3>${sitter.name || "Babysitter"} ⭐ ${sitter.rating ?? 0}</h3>
-          <p>${sitter.hourlyRate ?? 0}/hr</p>
-          <p>Verified: ${sitter.verifiedStatus ? "Yes ✅" : "No ❌"}</p>
+      card.innerHTML = `
+        <h3>${sitter.name || "Babysitter"} ⭐ ${sitter.rating ?? 0}</h3>
+        <p>${sitter.hourlyRate ?? 0}/hr</p>
+        <p>Verified: ${sitter.verifiedStatus ? "Yes ✅" : "No ❌"}</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <a href="profile.html?name=${encodeURIComponent(sitter.name || "")}">
             <button>View Profile</button>
           </a>
-        `;
+          <a href="booking.html?name=${encodeURIComponent(sitter.name || "")}">
+            <button class="green-btn">Book Now</button>
+          </a>
+          <a href="messages.html?name=${encodeURIComponent(sitter.name || "")}">
+            <button>Message</button>
+          </a>
+        </div>
+      `;
 
-        container.appendChild(card);
-      });
-    })
-    .catch(err => console.error("Load babysitters error:", err));
+      container.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>Could not load babysitters.</p>";
+  }
 }
 
-function loadProfile() {
-  if (!document.getElementById("name")) return;
+async function loadProfile() {
+  const nameEl = document.getElementById("name");
+  if (!nameEl) return;
 
-  const params = new URLSearchParams(window.location.search);
-  const nameFromUrl = params.get("name");
+  const sitter = await resolveSelectedBabysitter();
+  if (!sitter) {
+    nameEl.innerText = "Babysitter not found";
+    return;
+  }
 
-  if (!nameFromUrl) return;
+  const ratingEl = document.getElementById("rating");
+  const rateEl = document.getElementById("rate");
+  const verifiedEl = document.getElementById("verified");
+  const bioEl = document.getElementById("bio");
+  const availabilityEl = document.getElementById("availability");
+  const messageLink = document.getElementById("messageLink");
+  const bookLink = document.getElementById("bookLink");
 
-  fetch(`${API_BASE}/babysitters`)
-    .then(res => res.json())
-    .then(data => {
-      const sitter = data.find(s => String(s.name || "") === nameFromUrl);
+  nameEl.innerText = sitter.name || "";
+  if (ratingEl) ratingEl.innerText = `Rating: ⭐ ${sitter.rating ?? 0}`;
+  if (rateEl) rateEl.innerText = `$${sitter.hourlyRate ?? 0}/hr`;
+  if (verifiedEl) verifiedEl.innerText = sitter.verifiedStatus ? "✔ Verified" : "⚠ Not Verified";
+  if (bioEl) bioEl.innerText = sitter.bio || "";
+  if (availabilityEl) availabilityEl.innerText = sitter.availability || "";
 
-      if (!sitter) {
-        console.error("Sitter not found");
-        return;
-      }
+  if (messageLink) {
+    messageLink.href = `messages.html?name=${encodeURIComponent(sitter.name || "")}`;
+  }
 
-      const nameEl = document.getElementById("name");
-      const ratingEl = document.getElementById("rating");
-      const rateEl = document.getElementById("rate");
-      const verifiedEl = document.getElementById("verified");
-      const messageLink = document.getElementById("messageLink");
-      const bookLink = document.getElementById("bookLink");
-
-      if (nameEl) nameEl.innerText = sitter.name || "";
-      if (ratingEl) ratingEl.innerText = `Rating: ⭐ ${sitter.rating ?? 0}`;
-      if (rateEl) rateEl.innerText = `$${sitter.hourlyRate ?? 0}/hr`;
-      if (verifiedEl) verifiedEl.innerText = sitter.verifiedStatus ? "✔ Verified" : "⚠ Not Verified";
-
-      if (messageLink) {
-        messageLink.href = `messages.html?name=${encodeURIComponent(sitter.name || "")}`;
-      }
-
-      if (bookLink) {
-        bookLink.href = `booking.html?name=${encodeURIComponent(sitter.name || "")}`;
-      }
-    })
-    .catch(err => console.error("Load profile error:", err));
+  if (bookLink) {
+    bookLink.href = `booking.html?name=${encodeURIComponent(sitter.name || "")}`;
+  }
 }
 
-function loadBookingPageName() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
+async function loadBookingPageName() {
   const title = document.getElementById("babysitterName");
   if (!title) return;
 
-  if (!name) return;
+  const sitter = await resolveSelectedBabysitter();
+  if (!sitter) return;
 
-  title.innerText = `Book ${name}`;
+  selectedBabysitterRate = Number(sitter.hourlyRate) || 18;
+  title.innerText = `Book ${sitter.name || "Babysitter"}`;
 
-  fetch(`${API_BASE}/babysitters`)
-    .then(res => res.json())
-    .then(data => {
-      const sitter = data.find(s => String(s.name || "") === name);
-      if (sitter && typeof sitter.hourlyRate === "number") {
-        selectedBabysitterRate = sitter.hourlyRate;
-      } else {
-        selectedBabysitterRate = 18;
-      }
-      calculateCost();
-    })
-    .catch(() => {
-      selectedBabysitterRate = 18;
-      calculateCost();
-    });
+  const rateDisplay = document.getElementById("hourlyRateDisplay");
+  if (rateDisplay) {
+    rateDisplay.innerText = `$${selectedBabysitterRate}/hr`;
+  }
+
+  calculateCost();
 }
 
 function calculateCurrentCost() {
-  const startEl = document.getElementById("startTime");
-  const endEl = document.getElementById("endTime");
-
-  if (!startEl || !endEl) return 0;
-
-  const start = parseInt(startEl.value, 10);
-  const end = parseInt(endEl.value, 10);
+  const start = parseInt(document.getElementById("startTime")?.value, 10);
+  const end = parseInt(document.getElementById("endTime")?.value, 10);
 
   if (Number.isNaN(start) || Number.isNaN(end)) return 0;
 
@@ -282,115 +293,102 @@ function calculateCost() {
   costEl.innerText = calculateCurrentCost();
 }
 
-function confirmBooking() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
+async function confirmBooking() {
+  const sitter = await resolveSelectedBabysitter();
+  if (!sitter) {
+    alert("Babysitter not found.");
+    return;
+  }
 
-  const dateEl = document.getElementById("date");
-  const startEl = document.getElementById("startTime");
-  const endEl = document.getElementById("endTime");
-  const messageEl = document.getElementById("message");
-
-  const date = dateEl ? dateEl.value : "";
-  const start = startEl ? startEl.value : "";
-  const end = endEl ? endEl.value : "";
+  const date = document.getElementById("date")?.value;
+  const start = document.getElementById("startTime")?.value;
+  const end = document.getElementById("endTime")?.value;
   const cost = calculateCurrentCost();
-  const parentId = localStorage.getItem("userId");
+  const parentId = getParentId();
 
-  if (!name || !date || !start || !end || cost <= 0) {
+  if (!parentId) {
+    alert("Please log in first.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  if (!date || !start || !end || cost <= 0) {
     alert("Please complete all fields.");
     return;
   }
 
-  fetch(`${API_BASE}/babysitters`)
-    .then(res => res.json())
-    .then(babysitters => {
-      const sitter = babysitters.find(s => String(s.name || "") === name);
-
-      if (!sitter) {
-        alert("Babysitter not found.");
-        return null;
-      }
-
-      const booking = {
+  try {
+    const response = await fetch(`${API_BASE}/bookings`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
         date,
         startTime: start,
         endTime: end,
         totalCost: cost,
         status: "CREATED",
-        parent: { id: Number(parentId) },
+        parent: { id: parentId },
         babysitter: { id: sitter.id }
-      };
-
-      return fetch(`${API_BASE}/bookings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(booking)
-      });
-    })
-    .then(response => {
-      if (!response) return;
-      if (!response.ok) {
-        throw new Error("Booking failed");
-      }
-      if (messageEl) {
-        messageEl.innerText = "Booking confirmed!";
-      }
-      window.location.href = "bookings.html";
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Could not save booking.");
+      })
     });
+
+    if (!response.ok) throw new Error("Booking failed");
+
+    window.location.href = "bookings.html";
+  } catch (err) {
+    console.error(err);
+    alert("Could not save booking.");
+  }
 }
 
-function loadBookings() {
+async function loadBookings() {
   const container = document.getElementById("bookingsContainer");
   if (!container) return;
 
-  const parentId = Number(localStorage.getItem("userId"));
+  const parentId = getParentId();
+  if (!parentId) {
+    container.innerHTML = "<p>Please log in to see your bookings.</p>";
+    return;
+  }
 
-  fetch(`${API_BASE}/bookings`)
-    .then(res => res.json())
-    .then(data => {
-      if (!Array.isArray(data)) {
-        container.innerHTML = "<p>No bookings found.</p>";
-        return;
-      }
+  try {
+    const data = await fetchMyBookings(parentId);
 
-      container.innerHTML = "";
+    container.innerHTML = "";
 
-      const filtered = data.filter(booking =>
-        Number(booking.parent?.id) === parentId && booking.status !== "CANCELLED"
-      );
+    const filtered = Array.isArray(data)
+      ? data.filter(b => b.status !== "CANCELLED")
+      : [];
 
-      if (filtered.length === 0) {
-        container.innerHTML = "<p>You do not have any bookings yet.</p>";
-        return;
-      }
+    if (filtered.length === 0) {
+      container.innerHTML = "<p>You do not have any bookings yet.</p>";
+      return;
+    }
 
-      filtered.forEach(booking => {
-        const card = document.createElement("div");
-        card.className = "card";
+    filtered.forEach(booking => {
+      const card = document.createElement("div");
+      card.className = "card";
 
-        card.innerHTML = `
-          <h3>${booking.babysitter?.name || "Babysitter"}</h3>
-          <p>Date: ${booking.date || ""}</p>
-          <p>Time: ${booking.startTime || ""} - ${booking.endTime || ""}</p>
-          <p>Total: $${booking.totalCost ?? 0}</p>
-          <p>Status: ${booking.status || "Pending"}</p>
-          <button onclick="payNow(${booking.id})" ${booking.status === "PAID" ? "disabled" : ""}>
-            ${booking.status === "PAID" ? "Paid" : "Pay Now"}
-          </button>
-          <button onclick="cancelBooking(${booking.id})" class="delete-btn">Cancel</button>
-        `;
+      card.innerHTML = `
+        <h3>${booking.babysitter?.name || "Babysitter"}</h3>
+        <p>Date: ${formatDateOnly(booking.date)}</p>
+        <p>Time: ${booking.startTime || ""} - ${booking.endTime || ""}</p>
+        <p>Total: $${booking.totalCost ?? 0}</p>
+        <p>Status: ${booking.status || "Pending"}</p>
+        <button onclick="payNow(${booking.id})" ${booking.status === "PAID" ? "disabled" : ""}>
+          ${booking.status === "PAID" ? "Paid" : "Mark as Paid"}
+        </button>
+        <button onclick="cancelBooking(${booking.id})" class="delete-btn">Cancel</button>
+      `;
 
-        container.appendChild(card);
-      });
-    })
-    .catch(err => console.error(err));
+      container.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>Could not load bookings.</p>";
+  }
 }
 
 function cancelBooking(id) {
@@ -419,89 +417,250 @@ function payNow(id) {
       });
     })
     .then(() => loadBookings())
-    .catch(err => {
-      console.error("Payment error:", err);
-    });
+    .catch(err => console.error("Payment error:", err));
 }
 
-function loadReviews() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
+async function loadDashboardBooking() {
+  const container = document.getElementById("upcomingBookingContainer");
+  if (!container) return;
 
+  const parentId = getParentId();
+  if (!parentId) {
+    container.innerHTML = "<p>No upcoming bookings.</p>";
+    return;
+  }
+
+  try {
+    const bookings = await fetchMyBookings(parentId);
+    const active = Array.isArray(bookings)
+      ? bookings.filter(b => b.status !== "CANCELLED")
+      : [];
+
+    if (active.length === 0) {
+      container.innerHTML = "<p>No upcoming bookings.</p>";
+      return;
+    }
+
+    const booking = active[0];
+
+    container.innerHTML = `
+      <p><strong>Babysitter:</strong> ${booking.babysitter?.name || "Babysitter"}</p>
+      <p><strong>Date:</strong> ${formatDateOnly(booking.date)}</p>
+      <p><strong>Time:</strong> ${booking.startTime || ""} - ${booking.endTime || ""}</p>
+      <p><strong>Status:</strong> ${booking.status || "Pending"}</p>
+    `;
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>No upcoming bookings.</p>";
+  }
+}
+
+async function loadReviews() {
   const container = document.getElementById("reviewsContainer");
   if (!container) return;
 
-  const reviews = JSON.parse(localStorage.getItem(name)) || [];
-
-  container.innerHTML = "";
-
-  if (reviews.length === 0) {
+  const sitter = await resolveSelectedBabysitter();
+  if (!sitter) {
     container.innerHTML = "<p>No reviews yet.</p>";
     return;
   }
 
-  reviews.forEach(r => {
-    const p = document.createElement("p");
-    p.innerText = "⭐ " + r;
-    container.appendChild(p);
-  });
+  try {
+    const data = await fetchAllReviews();
+    const myReviews = Array.isArray(data)
+      ? data.filter(review => Number(review.babysitter?.id) === Number(sitter.id))
+      : [];
+
+    container.innerHTML = "";
+
+    if (myReviews.length === 0) {
+      container.innerHTML = "<p>No reviews yet.</p>";
+      return;
+    }
+
+    myReviews.forEach(review => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <p><strong>Rating:</strong> ⭐ ${review.rating ?? 0}</p>
+        <p>${review.comment || ""}</p>
+      `;
+
+      container.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>Could not load reviews.</p>";
+  }
 }
 
-function addReview() {
-  alert("Babysitter profiles are read-only for reviews.");
-}
+async function addReview(event) {
+  if (event) event.preventDefault();
 
-function loadMessages() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-
-  const chatBox = document.getElementById("chatBox");
-  if (!chatBox) return;
-
-  const messages = JSON.parse(localStorage.getItem("chat_" + name)) || [];
-
-  chatBox.innerHTML = "";
-
-  if (messages.length === 0) {
-    chatBox.innerHTML = "<p>No messages yet.</p>";
+  const sitter = await resolveSelectedBabysitter();
+  if (!sitter) {
+    alert("Select a babysitter first.");
     return;
   }
 
-  messages.forEach(msg => {
-    const p = document.createElement("p");
-    p.innerText = msg;
-    chatBox.appendChild(p);
-  });
+  const parentId = getParentId();
+  if (!parentId) {
+    alert("Please log in first.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const comment = document.getElementById("reviewInput")?.value.trim();
+  const rating = Number(document.getElementById("reviewRating")?.value || 5);
+
+  if (!comment) {
+    alert("Enter a review first.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/reviews`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        comment,
+        rating,
+        parent: { id: parentId },
+        babysitter: { id: sitter.id }
+      })
+    });
+
+    if (!response.ok) throw new Error("Review failed");
+
+    document.getElementById("reviewInput").value = "";
+    document.getElementById("reviewRating").value = "5";
+    await loadReviews();
+  } catch (err) {
+    console.error(err);
+    alert("Could not submit review.");
+  }
 }
 
-function sendMessage() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
+async function loadBabysitterDropdown() {
+  const select = document.getElementById("babysitterSelect");
+  if (!select) return;
 
+  try {
+    const babysitters = await fetchAllBabysitters();
+    select.innerHTML = `<option value="">Select a babysitter</option>`;
+
+    babysitters.forEach(sitter => {
+      const option = document.createElement("option");
+      option.value = sitter.id;
+      option.textContent = sitter.name || `Babysitter ${sitter.id}`;
+      select.appendChild(option);
+    });
+
+    const sitter = await resolveSelectedBabysitter();
+    if (sitter) {
+      select.value = String(sitter.id);
+      const chatName = document.getElementById("chatName");
+      if (chatName) chatName.textContent = `Message ${sitter.name || "Babysitter"}`;
+    }
+  } catch (err) {
+    console.error(err);
+    select.innerHTML = `<option value="">Could not load babysitters</option>`;
+  }
+}
+
+async function loadConversation() {
+  const chatBox = document.getElementById("chatBox");
+  const select = document.getElementById("babysitterSelect");
+  const parentId = getParentId();
+
+  if (!chatBox || !select || !parentId) return;
+
+  const babysitterId = Number(select.value);
+  if (!babysitterId) {
+    chatBox.innerHTML = "<p>Select a babysitter to view the conversation.</p>";
+    return;
+  }
+
+  try {
+    const messages = await fetchAllMessages();
+
+    const conversation = Array.isArray(messages)
+      ? messages.filter(message => {
+          const senderId = Number(message.sender?.id);
+          const receiverId = Number(message.receiver?.id);
+
+          return (
+            (senderId === parentId && receiverId === babysitterId) ||
+            (senderId === babysitterId && receiverId === parentId)
+          );
+        })
+      : [];
+
+    chatBox.innerHTML = "";
+
+    if (conversation.length === 0) {
+      chatBox.innerHTML = "<p>No messages yet.</p>";
+      return;
+    }
+
+    conversation.forEach(message => {
+      const p = document.createElement("div");
+      p.className = "chat-box";
+
+      const fromMe = Number(message.sender?.id) === parentId;
+      p.innerHTML = `
+        <p><strong>${fromMe ? "You" : (message.sender?.name || "Babysitter")}:</strong> ${message.content || ""}</p>
+        <p><small>${formatDateOnly(message.timestamp)}</small></p>
+      `;
+
+      chatBox.appendChild(p);
+    });
+  } catch (err) {
+    console.error(err);
+    chatBox.innerHTML = "<p>Could not load conversation.</p>";
+  }
+}
+
+async function sendMessage() {
+  const parentId = getParentId();
+  const babysitterId = Number(document.getElementById("babysitterSelect")?.value);
   const input = document.getElementById("messageInput");
-  if (!input) return;
 
-  const msg = input.value.trim();
-  if (!msg) return;
+  if (!parentId || !babysitterId || !input) {
+    alert("Select a babysitter and type a message.");
+    return;
+  }
 
-  let messages = JSON.parse(localStorage.getItem("chat_" + name)) || [];
-  messages.push("You: " + msg);
+  const content = input.value.trim();
+  if (!content) {
+    alert("Type a message first.");
+    return;
+  }
 
-  localStorage.setItem("chat_" + name, JSON.stringify(messages));
+  try {
+    const response = await fetch(`${API_BASE}/messages/send/${parentId}/${babysitterId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        content,
+        timestamp: new Date().toISOString().split("T")[0]
+      })
+    });
 
-  input.value = "";
-  loadMessages();
+    if (!response.ok) throw new Error("Message send failed");
+
+    input.value = "";
+    await loadConversation();
+  } catch (err) {
+    console.error(err);
+    alert("Could not send message.");
+  }
 }
-
-window.onload = function () {
-  loadBabysitters();
-  loadProfile();
-  loadBookingPageName();
-  loadBookings();
-  loadParentName();
-  loadReviews();
-  loadMessages();
-};
 
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signupForm");
@@ -509,4 +668,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loginForm = document.getElementById("loginForm");
   if (loginForm) loginForm.addEventListener("submit", login);
+
+  if (document.getElementById("userName")) {
+    loadParentName();
+  }
+
+  if (document.getElementById("babysitterContainer")) {
+    loadBabysitters();
+  }
+
+  if (document.getElementById("upcomingBookingContainer")) {
+    loadDashboardBooking();
+  }
+
+  if (document.getElementById("name")) {
+    loadProfile();
+  }
+
+  if (document.getElementById("babysitterName")) {
+    loadBookingPageName();
+  }
+
+  if (document.getElementById("bookingsContainer")) {
+    loadBookings();
+  }
+
+  if (document.getElementById("reviewsContainer")) {
+    loadReviews();
+  }
+
+  if (document.getElementById("babysitterSelect")) {
+    loadBabysitterDropdown();
+
+    const select = document.getElementById("babysitterSelect");
+    select.addEventListener("change", async () => {
+      selectedBabysitter = null;
+      await resolveSelectedBabysitter();
+      await loadConversation();
+      await loadReviews();
+    });
+  }
+
+  if (document.getElementById("chatBox")) {
+    loadConversation();
+  }
+
+  const reviewForm = document.getElementById("reviewForm");
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", addReview);
+  }
 });
