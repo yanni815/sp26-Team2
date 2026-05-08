@@ -462,6 +462,30 @@ GET /messages
 
 ---
 
+
+## Project Structure
+
+### Backend (`backend-api`)
+Handles:
+- REST API endpoints
+- Database operations
+- Business logic
+- Authentication logic
+- Booking/payment processing
+
+Main layers:
+- Controller layer
+- Service layer
+- Repository layer
+- Entity/model layer
+
+### Frontend (`high-fidelity-prototype`)
+Handles:
+- User interface
+- Forms and dashboards
+- API requests using fetch()
+- Local storage/session management
+
 ## 5. How To Run
 
 1. Clone repository
