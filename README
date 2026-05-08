@@ -5,20 +5,34 @@ SitSmart
 - Ayanna Garrett
 - Logan Castelloe
 
-## Description 
-SitSmart is a babysitting app that connects parents to trusted babysitters in the area. Parents search for avaliable sitters, view profiles and reviews, and book a sitter. Babysitters can manage their avaliablity, set their pay rate and list thier skills.
+Description
 
-## App Functions
-1. Parent (customer role):
-    1. Create/modify parent profile - Sign up as a parent.
-    2. Find avaliable sitters - Search for sitters by state, city, or reviews
-    3. Book a sitter for a specfic date - select from sitter avalibility or request a specific date.
-    4. Message the babysitter - private message the sitter in their inbox 
-    5. Leave reviews - review sitter on their skills, professionalism, and overall experience.
+SitSmart is a babysitting app that connects parents with trusted babysitters in their area. Parents can search for available sitters, view profiles and reviews, and book babysitting services. Babysitters can create and manage their profiles, set their hourly rates, and update their availability and information over time.
 
-2. Babysitter (provider role):
-    1. Sign up and create their babysitter profile.
-    2. Set up on the babysitter search page and set relevant information about themselves (I.e. skills and experience).
-    3. Update their proflie and relevant information as needed over time
-    4. Respond to contacts and appointments by the parent and coordinate as needed
-    5. Message parents, observe bookings (for them) and other small things
+App Functions
+1. Parent (Customer Role)
+- Create and manage a parent profile (sign up and login)
+- Browse available babysitters by location and ratings
+- View babysitter profiles, including reviews and details
+- Book babysitters for specific dates and times
+- Send and receive messages with babysitters
+- Leave reviews based on experience
+
+2. Babysitter (Provider Role)
+- Create an account and build a babysitter profile
+- Display profile information such as skills, experience, and hourly rate
+- Update profile details and availability
+- View and manage incoming bookings (accept/decline)
+- Communicate with parents through messaging
+- View reviews left by parents
+- Project Structure
+
+The project is split into two parts:
+
+Frontend (HTML/CSS/JavaScript):
+Handles all user interaction including login, browsing babysitters, booking, messaging UI, and profile management.
+
+Backend (Spring Boot / REST API):
+Manages data for parents, babysitters, bookings, reviews, and messages. It handles all CRUD operations and connects the frontend to the database.
+
+Each role (parent and babysitter) has its own set of html, java, and JavaScript files to keep the functionality separate and organized.
