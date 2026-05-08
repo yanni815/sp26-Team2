@@ -108,16 +108,7 @@ Scenario: <Respond and accept appointments and communications>
   When  <I recieve a request to communicate and/or to set-up appointments>
   Then  <My appointment schedule will update as needed, and my communications will be recived by the parent>
 
-US‑PROV‑003 —
-Story: As a Babysitter, I want to be able to reply to reviews from parents, so that they and others can see them
-Acceptance:
-
-Scenario: <Respond to reviews from parents>
-  Given <I have been given a review by a parent>
-  When  <I make a response to said review>
-  Then  <The message is saved and updates the review section to display it as such>
-
-US-PROV-004 —
+US-PROV-003 —
 Story: As a babysitter, I want to be able to change and modify my profile, So that updates can be made when needed
 Acceptance:
 
